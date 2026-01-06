@@ -1,6 +1,7 @@
 from dotenv import load_dotenv,set_key
 import upstox_client
 from upstox_client.rest import ApiException
+from configutarions import trading_config
 import os
 import webbrowser
 import logging
@@ -12,7 +13,6 @@ logging.basicConfig(
 )
 
 class Authenticator:
-    API_VERSION = "2.0"
     GRANT_TYPE = 'authorization_code'
     ENV_PATH = ".env"
     
@@ -67,7 +67,7 @@ class Authenticator:
         api_instance = upstox_client.LoginApi()
         try:
             # Get token API
-            api_response = api_instance.token(self.API_VERSION, code=code, client_id=self.api_key, client_secret=self.api_secret,redirect_uri=self.redirect_url, grant_type=self.GRANT_TYPE)
+            api_response = api_instance.token(trading_config.API_VERSION, code=code, client_id=self.api_key, client_secret=self.api_secret,redirect_uri=self.redirect_url, grant_type=self.GRANT_TYPE)
             self.access_token=api_response.access_token
         except ApiException as e:
             logging.error(f"Access Denied : {e}")
@@ -76,7 +76,7 @@ class Authenticator:
     def check_token_validity(self):
         api_instance = upstox_client.PortfolioApi(upstox_client.ApiClient(self.configuration))
         try:
-            return bool(api_instance.get_positions(self.API_VERSION))
+            return bool(api_instance.get_positions(trading_config.API_VERSION))
         except ApiException as e:
             logging.warning("Token Expired")
             return False
