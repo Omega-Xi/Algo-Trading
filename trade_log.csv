@@ -1,0 +1,3 @@
+trade_id,instrument,type,entry_time,entry_price,quantity,trigger_price,target_price,exit_time,exit_price,pnl,status,exit_reason,gross_pnl,net_pnl,charges
+0,NIFTY,CE,2026-01-06 10:04:45.682670+05:30,100,30,95,110,2026-01-06 10:04:45.683292+05:30,95,-221.8326975,CLOSED,Stop Loss Hit,-150,-221.8326975,71.83269750000001
+1,NIFTY,CE,2026-01-06 10:04:45.683640+05:30,100,40,95,110,2026-01-06 10:04:45.683895+05:30,110,327.64946,CLOSED,Target Hit,400,327.64946,72.35054000000001
