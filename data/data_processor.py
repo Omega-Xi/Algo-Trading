@@ -9,12 +9,18 @@ logging.basicConfig(
 )
 
 class Data_Processor:
-    def __init__(self,name,instruments):
+    def __init__(self,name):
         self.name=name
-        self.instruments=instruments
+        self.get_instruments()
         self.expiry_date=None
         self.instrument_key=None
         self.option_key=None
+
+    def get_instruments(self):
+        self.instruments=pd.read_json("https://assets.upstox.com/market-quote/instruments/exchange/NSE.json.gz")
+        self.instruments['expiry']=pd.to_datetime(self.instruments['expiry'],unit='ms',errors='coerce')
+        self.instruments['expiry']=self.instruments['expiry'].dt.date
+        self.instruments['expiry']=pd.to_datetime(self.instruments['expiry'])
 
     def get_lot_size(self):
         futures = self.instruments[
@@ -46,7 +52,7 @@ class Data_Processor:
         filtered=self.instruments[self.instruments['trading_symbol']==self.name]['instrument_key']
         if filtered.empty:
             logging.warning("Instrument Key Not Found")
-            return
+            return None
         self.instrument_key=filtered.squeeze()
         logging.info(f"Instrument Key: {self.instrument_key}")
         return self.instrument_key
@@ -62,6 +68,7 @@ class Data_Processor:
             return self.expiry_date
         except Exception as e:
             logging.error(f"Unable To Fetch Expiry : {e}")
+            return None
 
     def get_option_key(self,order_type,index_price):
         if index_price is None:

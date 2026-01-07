@@ -34,7 +34,7 @@ class Data_Collector:
             return self.available_margin
         except ApiException as e:
             logging.error(f"Exception while fetching margin :{e}")
-            return
+            return None
 
     def get_historic_data(self,instrument_key):
         today=date.today()
@@ -52,6 +52,7 @@ class Data_Collector:
             return tuple(dfs)
         except Exception as e:
             logging.error(f"Exception while fetching Historic Data :{e}")
+            return None
 
     def get_intraday_data(self,instrument_key):
         api_instance = upstox_client.HistoryV3Api(upstox_client.ApiClient(self.configuration))
@@ -65,6 +66,7 @@ class Data_Collector:
             return tuple(dfs)
         except Exception as e:
             logging.error(f"Exception while fetching Intraday Data :{e}")
+            return None
 
     def get_option_price(self,option_key):
         if option_key is None:
@@ -84,6 +86,7 @@ class Data_Collector:
                 return None
         except ApiException as e:
             logging.error(f"API Exception: {e}")
+            return None
         except Exception as e:
             logging.error(f"Exception when fetching option price: {e}")
             return None
@@ -95,3 +98,6 @@ class Data_Collector:
             return bool(api_response.data)
         except ApiException as e:
             logging.error(f"Exception when fetching position data :{e}")
+            return None
+
+    # Intruments are fetched in Data_Processor class for easier accessibility
