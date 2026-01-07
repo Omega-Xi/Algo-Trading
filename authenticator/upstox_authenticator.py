@@ -1,7 +1,7 @@
 from dotenv import load_dotenv,set_key
 import upstox_client
 from upstox_client.rest import ApiException
-from configutarions import trading_config
+from configurations import trading_config
 import os
 import webbrowser
 import logging

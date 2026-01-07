@@ -1,4 +1,4 @@
-from authenticator.upstox import Authenticator
+from authenticator.upstox_authenticator import Authenticator
 
 class Mock_Bot:
     def __init__(self):

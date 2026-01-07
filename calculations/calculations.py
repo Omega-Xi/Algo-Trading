@@ -1,5 +1,5 @@
 import logging
-from configutarions import trading_config
+from configurations import trading_config
 import numpy as np
 
 logging.basicConfig(
@@ -27,7 +27,7 @@ def calculate_trigger_price( quantity, current_atr=None, option_price=None, use_
     else:
         # Fall back
         adjusted_risk_percentage = max(trading_config.RISK_PERCENT, 2)
-        trigger_price = option_price * (1 - adjusted_risk_percentage)
+        trigger_price = option_price * (1 - adjusted_risk_percentage/100)
     # Apply min/max bounds
     min_stop = option_price * (1 - trading_config.MINIMUM_SL_PERCENT/100)
     max_stop = option_price * (1 - trading_config.MAXIMUM_SL_PERCENT/100)
@@ -36,47 +36,55 @@ def calculate_trigger_price( quantity, current_atr=None, option_price=None, use_
     
     return round(max(trigger_price, 0.05), 2)
 
-def calculate_indicators(candle_df):
-    # --- MACD Calculation ---
+# --- MACD Calculation ---
+def caculate_macd(candle_df):
     df = candle_df.copy()
     df["ema12"] = df["close"].ewm(span=12,adjust=False).mean()
     df["ema26"] = df["close"].ewm(span=26,adjust=False).mean()
     df["macd"] = df["ema12"] - df["ema26"]
     df["signal"] = df["macd"].ewm(span=9,adjust=False).mean()
+    return df
 
-    # --- RSI Calculation ---
+# --- RSI Calculation ---
+def calculate_rsi(df):
     delta = df["close"].diff()
     gain = delta.where(delta > 0, 0)
     loss = -delta.where(delta < 0, 0)
     avg_gain = gain.ewm(alpha=1/14, adjust=False).mean()
     avg_loss = loss.ewm(alpha=1/14, adjust=False).mean()
     rs = avg_gain / avg_loss.replace(0, np.nan)
-    df["rsi"] = 100 - (100 / (1 + rs))
+    df["rsi"] = 100 - (100 / (1 + rs.fillna(0)))
+    return df
 
-    # --- ATR Calculation (RMA) ---
+# --- ATR Calculation (RMA) ---
+def calculate_atr(df):
     df['high_low']   = df['high'] - df['low']
     df['high_close'] = (df['high'] - df['close'].shift()).abs()
     df['low_close']  = (df['low'] - df['close'].shift()).abs()
     df['tr']         = df[['high_low', 'high_close', 'low_close']].max(axis=1)
     df['atr'] = df['tr'].ewm(alpha=1/14, adjust=False).mean()
+    return df
 
-    # --- Directional Movement ---
+# --- DX and ADX (RMA) ---
+def calculate_adx(df):
+    if 'atr' not in df.columns:
+        df = calculate_atr(df)
     up_move   = df['high'].diff()
     down_move = -df['low'].diff()
-
     df['plus_dm']  = np.where((up_move > down_move) & (up_move > 0), up_move, 0.0)
     df['minus_dm'] = np.where((down_move > up_move) & (down_move > 0), down_move, 0.0)
-
-    # --- DI using RMA ---
     plus_dm_rma  = df['plus_dm'].ewm(alpha=1/14, adjust=False).mean()
     minus_dm_rma = df['minus_dm'].ewm(alpha=1/14, adjust=False).mean()
-
     df['plus_di']  = 100 * (plus_dm_rma / df['atr'])
     df['minus_di'] = 100 * (minus_dm_rma / df['atr'])
-
-    # --- DX and ADX (RMA) ---
     df['dx'] = 100 * (abs(df['plus_di'] - df['minus_di']) / (df['plus_di'] + df['minus_di']))
     df['dx'] = df['dx'].fillna(0) 
     df['adx'] = df['dx'].ewm(alpha=1/14, adjust=False).mean()
+    return df
 
+def calculate_indicators(candle_df):
+    df=caculate_macd(candle_df)
+    df=calculate_rsi(df)
+    df=calculate_atr(df)
+    df=calculate_adx(df)
     return df

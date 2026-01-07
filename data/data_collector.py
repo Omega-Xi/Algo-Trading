@@ -2,7 +2,7 @@ import logging
 import upstox_client
 from upstox_client.rest import ApiException
 from data.data_processor import Data_Processor
-from configutarions import trading_config
+from configurations import trading_config
 from datetime import date,timedelta
 
 logging.basicConfig(
