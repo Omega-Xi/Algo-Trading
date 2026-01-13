@@ -1,6 +1,7 @@
 import logging
 from configurations import trading_config
 import numpy as np
+import math
 
 logging.basicConfig(
     level=logging.INFO,
@@ -33,6 +34,13 @@ def calculate_quantity(lot_size, option_price, available_margin, trigger_price):
     final_lots = min(max_lots_by_risk, max_lots_by_margin)
     quantity=final_lots*lot_size
     return max(quantity, 0)
+
+def calculate_exit_price(option_price,trigger_price):
+    if option_price is None or trigger_price is None:
+        logging.info("Invalid Price Data")
+        return None
+    exit_price=math.floor(option_price + (option_price - trigger_price) * trading_config.R_TO_R_RATIO)
+    return exit_price
 
 # --- MACD Calculation ---
 def caculate_macd(candle_df):

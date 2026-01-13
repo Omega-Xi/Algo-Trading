@@ -41,6 +41,13 @@ if __name__=="__main__":
     else:
         logging.info(f"Quantity Calculation Succesfull :{quantity}")
 
+    # Check Exit Price
+    exit_price=calculations.calculate_exit_price(TEST_OPTION_PRICE,trigger_price)
+    if exit_price is None:
+        logging.critical("Failed to Calculate Exit Price")
+    else:
+        logging.info(f"Exit Price Calculation Succesfull :{exit_price}")
+
     # Calculate all indicators
     df_with_indicators = calculations.calculate_indicators(candle_df)
     indicator_cols = [
