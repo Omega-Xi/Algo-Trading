@@ -32,6 +32,13 @@ if __name__=="__main__":
     else:
         logging.info(f"Instrument Key Extraction Succesfull :{instrument_key}")
 
+    # Check Lot Size
+    lot_size=data_processor.get_lot_size()
+    if lot_size is None:
+        logging.critical("Failed to Fetch Lot Size")
+    else:
+        logging.info(f"Lot Size Fetching Succesfull :{lot_size}")
+
     # Check Historic Data
     if data_collector.get_historic_data(instrument_key) is None:
         logging.critical("Failed to Fetch Historical Data")

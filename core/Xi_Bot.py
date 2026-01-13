@@ -847,8 +847,8 @@ class Trading_Bot:
         if len(df_15) < 26: 
             print("Not enough data for MACD signal check") 
             return 
-        macd_prev, macd_curr = df_15["macd"].iloc[-2], df_15["macd"].iloc[-1] 
-        signal_prev, signal_curr = df_15["signal"].iloc[-2], df_15["signal"].iloc[-1] 
+        macd_prev, macd_curr = df_5["macd"].iloc[-2], df_5["macd"].iloc[-1] 
+        signal_prev, signal_curr = df_5["signal"].iloc[-2], df_5["signal"].iloc[-1] 
         rsi_prev, rsi_curr = df_15["rsi"].iloc[-2], df_15["rsi"].iloc[-1]
         adx_prev, adx_curr = df_15["adx"].iloc[-2], df_15["adx"].iloc[-1]
         atr = df_15["atr"].iloc[-1]

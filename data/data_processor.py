@@ -30,10 +30,10 @@ class Data_Processor:
         futures_sorted = futures.sort_values(by='expiry')
         if not futures_sorted.empty:
             lot_size=int(futures_sorted.iloc[0]['lot_size'])
-            print(f"{self.name} Lot Size : {lot_size}")
             return lot_size
         else:
-            raise ValueError(f"No Futures Found For Instrument: {self.name}")
+            logging.warning(f"No Futures Found For Instrument: {self.name}")
+            return None
         
     @staticmethod
     def convert_to_df(response):

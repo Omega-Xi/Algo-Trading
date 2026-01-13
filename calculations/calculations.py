@@ -8,33 +8,31 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S"
 )
 
-def calculate_quantity(lot_size,option_price,available_margin):
-    if option_price <= 0:
-        logging.error("Invalid option price for quantity calculation")
-        return 0
-    usable_margin=(trading_config.MARGIN_PERCENT)*available_margin
-    max_lots=usable_margin//(option_price*lot_size)
-    quantity=int(max_lots)*lot_size
-    return max(quantity, 0)
+def calculate_trigger_price(current_atr=None, option_price=None, option_delta=0.5):
+    if option_price is None:
+        logging.error("Option Price not available")
+        return None
+    if current_atr is None:
+        logging.error("ATR not available")
+        return None
+    atr_stop = current_atr * trading_config.ATR_MULTIPLIER * option_delta
+    trigger_price = option_price - atr_stop
+    return round(trigger_price, 2)
 
-def calculate_trigger_price( quantity, current_atr=None, option_price=None, use_atr=True):
-    if quantity <= 0 or option_price is None:
-        return 0
-    if use_atr and current_atr is not None:
-        # Dynamic stop based on ATR
-        atr_stop = current_atr * trading_config.ATR_MULTIPLIER
-        trigger_price = option_price - atr_stop
-    else:
-        # Fall back
-        adjusted_risk_percentage = max(trading_config.RISK_PERCENT, 2)
-        trigger_price = option_price * (1 - adjusted_risk_percentage/100)
-    # Apply min/max bounds
-    min_stop = option_price * (1 - trading_config.MINIMUM_SL_PERCENT/100)
-    max_stop = option_price * (1 - trading_config.MAXIMUM_SL_PERCENT/100)
-    trigger_price = max(trigger_price, min_stop)  # Not too tight
-    trigger_price = min(trigger_price, max_stop)  # Not too loose
-    
-    return round(max(trigger_price, 0.05), 2)
+def calculate_quantity(lot_size, option_price, available_margin, trigger_price):
+    if option_price <= 0 or trigger_price is None:
+        logging.error("Invalid Price Data")
+        return None
+    risk_per_lot=(option_price-trigger_price)*lot_size
+    if risk_per_lot <=0:
+        logging.error("Risk per lot is negative")
+        return None
+    max_risk=available_margin * trading_config.RISK_PERCENT/100
+    max_lots_by_risk=int(max_risk//risk_per_lot)
+    max_lots_by_margin=int(available_margin//(option_price*lot_size))
+    final_lots = min(max_lots_by_risk, max_lots_by_margin)
+    quantity=final_lots*lot_size
+    return max(quantity, 0)
 
 # --- MACD Calculation ---
 def caculate_macd(candle_df):
