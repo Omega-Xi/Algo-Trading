@@ -14,8 +14,8 @@ logging.basicConfig(
 class Data_Collector:
     def __init__(self,access_token,dry_run):
         self.access_token=access_token
-        self.configuration = upstox_client.Configuration()
-        self.configuration.access_token = self.access_token
+        trading_config.CONFIGURATION = upstox_client.Configuration()
+        trading_config.CONFIGURATION.access_token = self.access_token
         self.dry_run=dry_run
         self.option_price=None
         self.available_margin=None
@@ -25,7 +25,7 @@ class Data_Collector:
             self.available_margin=trading_config.DRY_RUN_MARGIN
             logging.info("Dry Run Margin Fetched")
             return self.available_margin
-        api_instance = upstox_client.UserApi(upstox_client.ApiClient(self.configuration))
+        api_instance = upstox_client.UserApi(upstox_client.ApiClient(trading_config.CONFIGURATION))
         try:
             # Get User Fund And Margin
             api_response = api_instance.get_user_fund_margin(trading_config.API_VERSION)
@@ -41,7 +41,7 @@ class Data_Collector:
         previous_day=today-timedelta(days=7)
         str_today=str(today)
         str_previous_day=str(previous_day)
-        apiInstance = upstox_client.HistoryV3Api(upstox_client.ApiClient(self.configuration))
+        apiInstance = upstox_client.HistoryV3Api(upstox_client.ApiClient(trading_config.CONFIGURATION))
         try:
             dfs=[]
             for interval in trading_config.INTERVALS:
@@ -55,7 +55,7 @@ class Data_Collector:
             return None
 
     def get_intraday_data(self,instrument_key):
-        api_instance = upstox_client.HistoryV3Api(upstox_client.ApiClient(self.configuration))
+        api_instance = upstox_client.HistoryV3Api(upstox_client.ApiClient(trading_config.CONFIGURATION))
         try:
             dfs=[]
             for interval in trading_config.INTERVALS:
@@ -72,8 +72,8 @@ class Data_Collector:
         if option_key is None:
             logging.error("Invalid option key")
             return None
-        self.configuration.access_token = self.access_token
-        api_instance = upstox_client.MarketQuoteV3Api(upstox_client.ApiClient(self.configuration))
+        trading_config.CONFIGURATION.access_token = self.access_token
+        api_instance = upstox_client.MarketQuoteV3Api(upstox_client.ApiClient(trading_config.CONFIGURATION))
         try:
             response = api_instance.get_ltp(instrument_key=option_key)
             last_trade_price = response.data[next(iter(response.data))].last_price
@@ -92,7 +92,7 @@ class Data_Collector:
             return None
         
     def check_position(self):
-        api_instance = upstox_client.PortfolioApi(upstox_client.ApiClient(self.configuration))
+        api_instance = upstox_client.PortfolioApi(upstox_client.ApiClient(trading_config.CONFIGURATION))
         try:
             api_response = api_instance.get_positions(trading_config.API_VERSION)
             return bool(api_response.data)

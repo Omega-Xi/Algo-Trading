@@ -10,32 +10,31 @@ logging.basicConfig(
 
 class Mock_Bot:
     def __init__(self,delay=1):
-        self.alert=Alerts()
         self.delay=delay
 
     def connected(self):
         logging.info("Web Socket Connected")
-        self.alert.websocket_connected()
+        Alerts.websocket_connected()
         time.sleep(self.delay)
     
     def disconnected(self):
         logging.info("Web Socket Disconnected")
-        self.alert.websocket_disconnected()
+        Alerts.websocket_disconnected()
         time.sleep(self.delay)
 
     def error(self):
         logging.critical("Web Socket Error")
-        self.alert.websocket_error()
+        Alerts.websocket_error()
         time.sleep(self.delay)
     
     def enter_trade(self):
         logging.info("Trade Entered")
-        self.alert.trade_entered()
+        Alerts.trade_entered()
         time.sleep(self.delay)
 
     def exit_trade(self):
         logging.info("Trade Exited")
-        self.alert.trade_exited()
+        Alerts.trade_exited()
         time.sleep(self.delay)
 
     def run(self):

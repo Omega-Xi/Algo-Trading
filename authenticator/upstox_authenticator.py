@@ -39,6 +39,7 @@ class Authenticator:
 
     def get_access_token(self):
         if self.check_token_validity():
+            logging.info("Access Token Validity Confirmed")
             return self.access_token
         self.generate_access_token()
         return self.access_token

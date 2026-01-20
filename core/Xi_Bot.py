@@ -691,8 +691,7 @@ class Trading_Bot:
         self.instruments['expiry']=self.instruments['expiry'].dt.date
         self.instruments['expiry']=pd.to_datetime(self.instruments['expiry'])
 
-    def can_enter_trade(self):
-        
+    def can_enter_trade(self):    
         if self.last_exit_time is None:
             return True
         now_aware = datetime.now(pytz.timezone('Asia/Kolkata'))

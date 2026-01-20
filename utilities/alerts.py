@@ -1,20 +1,29 @@
 import winsound
 
 class Alerts:
-    def websocket_connected(self):
+    @staticmethod
+    def websocket_connected():
         winsound.Beep(2000,200)
 
-    def websocket_error(self):
+    @staticmethod
+    def websocket_error():
         winsound.Beep(400,200)
         winsound.Beep(400,200)
         winsound.Beep(400,200)
         winsound.Beep(400,3000)
 
-    def websocket_disconnected(self):
+    @staticmethod
+    def websocket_disconnected():
         winsound.Beep(1200,1000)
 
-    def trade_entered(self):
+    @staticmethod
+    def trade_entered():
         winsound.Beep(900,200)
 
-    def trade_exited(self):
+    @staticmethod
+    def trade_exited():
         winsound.Beep(700,200)
+
+    @staticmethod
+    def error():
+        winsound.Beep(1000,1000)

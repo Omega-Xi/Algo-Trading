@@ -4,7 +4,7 @@ from datetime import datetime
 
 @dataclass
 class Trade:
-    trade_id: int
+    trade_id: int = field(init=False)
     instrument: str
     type: str
     entry_time: datetime
@@ -20,3 +20,9 @@ class Trade:
     gross_pnl: float = 0.0
     net_pnl: float = 0.0
     charges: float = 0.0
+
+    _id_counter: int = 0
+
+    def __post_init__(self):
+        type(self)._id_counter += 1
+        self.trade_id = type(self)._id_counter

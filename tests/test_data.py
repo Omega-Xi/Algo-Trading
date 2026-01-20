@@ -16,7 +16,7 @@ if __name__=="__main__":
     authenticator=Authenticator()
     access_token=authenticator.get_access_token()
     data_collector=Data_Collector(access_token,dry_run=True)
-    data_processor=Data_Processor(INSTRUMENT_NAME)
+    data_processor=Data_Processor()
 
     # Check Margin
     margin=data_collector.get_margin()
@@ -26,7 +26,7 @@ if __name__=="__main__":
         logging.info(f"Margin Fetching Succesfull :{margin}")
 
     # Check Instrument Key
-    instrument_key=data_processor.get_instrument_key()
+    instrument_key=data_processor.get_instrument_key(INSTRUMENT_NAME)
     if instrument_key is None:
         logging.critical("Failed to Extract Instrument key")
     else:
