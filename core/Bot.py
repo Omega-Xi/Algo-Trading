@@ -1,6 +1,8 @@
 import upstox_client
 from upstox_client import MarketDataStreamerV3
 from upstox_client.rest import ApiException
+from services.exporter import export_trades_to_excel
+from services.reporting import generate_performance_report
 from configurations.trading_config import *
 from authenticator.upstox_authenticator import Authenticator
 from utilities.alerts import Alerts
@@ -115,6 +117,8 @@ class Bot:
         logging.info("Websocket Disconnected")
         self.status="OFFLINE"
         Alerts.websocket_disconnected()
+        generate_performance_report(self.transcriber)
+        export_trades_to_excel(self.transcriber.trades)
 
     def on_message(self,message):
         if self.kill_switch:
