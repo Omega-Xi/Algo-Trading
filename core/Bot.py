@@ -18,6 +18,7 @@ import threading
 import pytz
 import logging
 import math
+from utilities.wake_lock import Wake_Lock
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,6 +41,7 @@ class Bot:
         self.intraday_df={}
         self.entry_lock=threading.Lock()
         self.exit_lock=threading.Lock()
+        self.wake_lock=Wake_Lock()
         self.option_type=None
         self.option_key=None
         self.index_price=None
@@ -104,6 +106,7 @@ class Bot:
         self.streamer.connect()
 
     def on_open(self):
+        self.wake_lock.activate()
         logging.info("Websocket Connection Established")
         self.status="ONLINE"
         Alerts.websocket_connected()
@@ -119,6 +122,7 @@ class Bot:
         Alerts.websocket_disconnected()
         generate_performance_report(self.transcriber)
         export_trades_to_excel(self.transcriber.trades)
+        self.wake_lock.deactivate()
 
     def on_message(self,message):
         if self.kill_switch:
