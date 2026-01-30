@@ -28,9 +28,22 @@ def export_trades_to_excel(trades, filename="trade_log.xlsx"):
         combined_df = new_df
     
     # Make datetimes timezone-naive
-    for col in combined_df.select_dtypes(include=["datetimetz"]).columns:
-        combined_df[col] = combined_df[col].dt.tz_localize(None)
+    for col in combined_df.columns:
+        if pd.api.types.is_datetime64_any_dtype(combined_df[col]):
+            # Strip timezone if present
+            if hasattr(combined_df[col].dt, "tz"):
+                combined_df[col] = combined_df[col].dt.tz_localize(None)
+        else:
+            # Try coercing object columns to datetime
+            try:
+                combined_df[col] = pd.to_datetime(combined_df[col], errors="ignore")
+                if pd.api.types.is_datetime64_any_dtype(combined_df[col]) and hasattr(combined_df[col].dt, "tz"):
+                    combined_df[col] = combined_df[col].dt.tz_localize(None)
+            except Exception:
+                pass
     
+    combined_df = combined_df.drop_duplicates()
+
     try:
         combined_df.to_excel(filename, index=False)
         logging.info(f"Trades appended successfully to '{filename}'")
