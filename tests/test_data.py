@@ -32,6 +32,13 @@ if __name__=="__main__":
     else:
         logging.info(f"Instrument Key Extraction Succesfull :{instrument_key}")
 
+    # Check Futures Key 
+    futures_Key=data_processor.get_futures_key()
+    if futures_Key is None:
+        logging.critical("Failed to Extract Futures key")
+    else:
+        logging.info(f"Futures Key Extraction Succesfull :{futures_Key}")
+
     # Check Lot Size
     lot_size=data_processor.get_lot_size()
     if lot_size is None:

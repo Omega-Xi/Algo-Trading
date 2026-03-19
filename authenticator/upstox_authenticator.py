@@ -1,6 +1,7 @@
 from dotenv import load_dotenv,set_key
 import upstox_client
 from upstox_client.rest import ApiException
+from authenticator.credential_handler import Credential_Handler
 from configurations import trading_config
 import os
 import webbrowser
@@ -16,27 +17,25 @@ class Authenticator:
     GRANT_TYPE = 'authorization_code'
     ENV_PATH = ".env"
     
-    def __init__(self):
-        self.check_env_file()
-        load_dotenv()
-        self.api_key=os.getenv('api_key')
-        self.api_secret=os.getenv('api_secret')
-        self.redirect_url=os.getenv('redirect_url')
-        self.state=os.getenv('state')
+    def __init__(self,mode="console"):
+        if not self.check_env_file():
+            logging.warning("Environment file not found. Please provide API credentials.")
+            if mode=="console":
+                Credential_Handler.get_api_credentials_from_console()    
+                self.load_credentials()
+        else:
+            self.load_credentials()
+
+    def check_env_file(self):
+        return os.path.exists(self.ENV_PATH)
+
+    def load_credentials(self):
+        self.api_key, self.api_secret, self.redirect_url, self.state, self.access_token = Credential_Handler.get_credentials_from_env()
         self.url=f"https://api.upstox.com/v2/login/authorization/dialog?response_type=code&client_id={self.api_key}&redirect_uri={self.redirect_url}&state={self.state}"
-        self.access_token=os.getenv('access_token')
         self.configuration = upstox_client.Configuration()
         if self.access_token:
             self.configuration.access_token=self.access_token
-
-    def check_env_file(self):
-        if not os.path.exists(self.ENV_PATH):
-            logging.warning("API details not found.")
-            for key in ["api_key", "api_secret", "redirect_url", "state"]:
-                set_key(self.ENV_PATH, key, input(f"Enter {key.replace('_',' ').title()}: "))
-            set_key(self.ENV_PATH, "access_token", "")
-            logging.info("API details saved")
-
+        
     def get_access_token(self):
         if self.check_token_validity():
             logging.info("Access Token Validity Confirmed")
@@ -53,8 +52,8 @@ class Authenticator:
             return
         self.fetch_token(code)
         if self.access_token:
-            self.update_access_token()
-            logging.info("Access Token Updated")
+            self.access_token=Credential_Handler.update_access_token(self.access_token)
+            self.configuration.access_token = self.access_token
         else:
             logging.error("Invalid Code")
 
@@ -81,9 +80,3 @@ class Authenticator:
         except ApiException as e:
             logging.warning("Token Expired")
             return False
-
-    def update_access_token(self):
-        set_key(self.ENV_PATH, "access_token", self.access_token)
-        load_dotenv(self.ENV_PATH, override=True)
-        self.access_token = os.getenv("access_token")
-        self.configuration.access_token = self.access_token

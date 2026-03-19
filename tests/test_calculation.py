@@ -20,9 +20,17 @@ data = {
     "open":  [100, 102, 101, 103, 104, 105, 106, 107],
     "high":  [103, 104, 103, 105, 106, 107, 108, 109],
     "low":   [99, 101, 100, 102, 103, 104, 105, 106],
-    "close": [102, 103, 102, 104, 105, 106, 107, 108]
+    "close": [102, 103, 102, 104, 105, 106, 107, 108],
+    "volume":[1500, 1600, 1550, 1650, 1700, 1750, 1800, 1850]
 }
-candle_df = pd.DataFrame(data)
+df = pd.DataFrame(data)
+
+# Add timestamps: first 4 rows = Day 1, next 4 rows = Day 2
+df["timestamp"] = pd.date_range("2024-01-01 09:15", periods=8, freq="5min")
+df.loc[4:, "timestamp"] = pd.date_range("2024-01-02 09:15", periods=4, freq="5min")
+
+df.set_index("timestamp", inplace=True)
+
 
 if __name__=="__main__":
     # Check Trigger Price Calculation 
@@ -49,10 +57,10 @@ if __name__=="__main__":
         logging.info(f"Exit Price Calculation Succesfull :{exit_price}")
 
     # Calculate all indicators
-    df_with_indicators = calculations.calculate_indicators(candle_df)
+    df_with_indicators = calculations.calculate_indicators(df)
     indicator_cols = [
         "ema12", "ema26", "macd", "signal",
         "rsi", "atr", "plus_di", "minus_di",
-        "dx", "adx"
+        "dx", "adx" , "vwap"
     ]
     print(df_with_indicators[indicator_cols])

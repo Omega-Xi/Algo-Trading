@@ -16,9 +16,10 @@ def calculate_trigger_price(current_atr=None, option_price=None, option_delta=0.
     if current_atr is None:
         logging.error("ATR not available")
         return None
-    atr_stop = current_atr * trading_config.ATR_MULTIPLIER * option_delta
+    atr_stop = current_atr * trading_config.ATR_MULTIPLIER * abs(option_delta)
     trigger_price = option_price - atr_stop
-    return round(trigger_price, 2)
+    trigger_price = round(trigger_price, 2)
+    return max(trigger_price, 0)
 
 def calculate_quantity(lot_size, option_price, available_margin, trigger_price):
     if option_price <= 0 or trigger_price is None:
@@ -43,12 +44,17 @@ def calculate_exit_price(option_price,trigger_price):
     return exit_price
 
 # --- MACD Calculation ---
-def caculate_macd(candle_df):
+def calculate_macd(candle_df):
     df = candle_df.copy()
     df["ema12"] = df["close"].ewm(span=12,adjust=False).mean()
     df["ema26"] = df["close"].ewm(span=26,adjust=False).mean()
     df["macd"] = df["ema12"] - df["ema26"]
     df["signal"] = df["macd"].ewm(span=9,adjust=False).mean()
+    return df
+
+# --- EMA Calculation ---
+def calculate_ema(df, period=200):
+    df[f"ema{period}"] = df["close"].ewm(span=period, adjust=False).mean()
     return df
 
 # --- RSI Calculation ---
@@ -88,9 +94,29 @@ def calculate_adx(df):
     df['adx'] = df['dx'].ewm(alpha=1/14, adjust=False).mean()
     return df
 
+# --- VWAP Calculation ---
+def calculate_vwap(df):
+    df["typical_price"] = (df["high"] + df["low"] + df["close"]) / 3
+    df["date"] = df.index.date
+    df["cum_vol_price"] = (df["typical_price"] * df["volume"]).groupby(df["date"]).cumsum()
+    df["cum_volume"] = df["volume"].groupby(df["date"]).cumsum()
+    df["vwap"] = df["cum_vol_price"] / df["cum_volume"]
+    return df
+
+# --- Bollinger Bands Calculation ---
+def calculate_bollinger_bands(df, period=20, std_dev=2):
+    df["sma"] = df["close"].rolling(window=period).mean()
+    df["std"] = df["close"].rolling(window=period).std()
+    df["bb_upper"] = df["sma"] + (df["std"] * std_dev)
+    df["bb_lower"] = df["sma"] - (df["std"] * std_dev)
+    return df
+
 def calculate_indicators(candle_df):
-    df=caculate_macd(candle_df)
+    df=calculate_macd(candle_df)
     df=calculate_rsi(df)
     df=calculate_atr(df)
     df=calculate_adx(df)
+    df=calculate_vwap(df)
+    df=calculate_bollinger_bands(df)
+    df = calculate_ema(df, period=200)
     return df

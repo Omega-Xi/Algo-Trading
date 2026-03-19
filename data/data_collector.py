@@ -6,7 +6,7 @@ from configurations import trading_config
 from datetime import date,timedelta
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.WARNING,
     format="%(asctime)s | %(levelname)-8s | %(filename)s:%(lineno)d | %(funcName)s() | %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S"
 )
@@ -18,6 +18,7 @@ class Data_Collector:
         trading_config.CONFIGURATION.access_token = self.access_token
         self.dry_run=dry_run
         self.option_price=None
+        self.option_delta=None
         self.available_margin=None
 
     def get_margin(self):
@@ -69,6 +70,7 @@ class Data_Collector:
             return None
 
     def get_option_price(self,option_key):
+        self.option_price=None
         if option_key is None:
             logging.error("Invalid option key")
             return None
@@ -90,12 +92,42 @@ class Data_Collector:
         except Exception as e:
             logging.error(f"Exception when fetching option price: {e}")
             return None
-        
+
+    def get_option_delta(self,option_key):
+        self.option_delta=None
+        if option_key is None:
+            logging.error("Invalid option key")
+            return None
+        trading_config.CONFIGURATION.access_token = self.access_token    
+        apiInstance = upstox_client.MarketQuoteV3Api(upstox_client.ApiClient(trading_config.CONFIGURATION))
+        try:
+            response = apiInstance.get_market_quote_option_greek(instrument_key=option_key)
+            instrument_data = next(iter(response.data.values()))
+            delta = instrument_data.delta
+            if delta:
+                self.option_delta=delta
+                logging.info(f"Option Delta :{self.option_delta}")
+                return self.option_delta
+            else:
+                logging.warning("No option greek data available.")
+                return None
+        except ApiException as e:
+            logging.error(f"API Exception: {e}")
+            return None
+        except Exception as e:
+            logging.error(f"Exception when fetching option delta: {e}")
+            return None
+
     def check_position(self):
         api_instance = upstox_client.PortfolioApi(upstox_client.ApiClient(trading_config.CONFIGURATION))
         try:
             api_response = api_instance.get_positions(trading_config.API_VERSION)
-            return bool(api_response.data)
+            if not api_response or not api_response.data:
+                return False
+            for pos in api_response.data:
+                if pos.quantity != 0:
+                    return True
+            return False
         except ApiException as e:
             logging.error(f"Exception when fetching position data :{e}")
             return None

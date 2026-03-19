@@ -13,7 +13,9 @@ class Data_Processor:
     def __init__(self):
         self.get_instruments()
         self.expiry_date=None
+        self.futures_expiry_date=None
         self.instrument_key=None
+        self.futures_key=None
         self.option_key=None
 
     def get_instruments(self):
@@ -39,11 +41,14 @@ class Data_Processor:
     @staticmethod
     def convert_to_candles(df,interval,historic_df,intraday_df):
         time_frame=INTERVAL_MAP[interval]
-        resampled = df["price"].resample(time_frame).ohlc().dropna()
+        resampled = df.resample(time_frame).agg({
+                "price": ["first", "max", "min", "last"],
+                "vtt": lambda x: x.iloc[-1] - x.iloc[0]
+            }).dropna()
+        resampled.columns = ["open", "high", "low", "close", "volume"]
         frames = [historic_df, intraday_df, resampled]
-        frames = [df for df in frames if not df.empty]   # exclude empties
+        frames = [f for f in frames if not f.empty]
         candle_df = pd.concat(frames) if frames else pd.DataFrame()
-        # Remove duplicate index values 
         candle_df = candle_df[~candle_df.index.duplicated(keep='last')]
         return candle_df
 
@@ -57,6 +62,27 @@ class Data_Processor:
         logging.info(f"Instrument Key: {self.instrument_key}")
         return self.instrument_key
     
+    def get_futures_key(self):
+        try:
+            futures = self.instruments[
+                (self.instruments['segment'] == "NSE_FO") &
+                (self.instruments['underlying_symbol'] == self.name) &
+                (self.instruments['instrument_type'] == "FUT")
+            ]
+            futures_sorted = futures.sort_values(by='expiry')
+            if not futures_sorted.empty:
+                nearest_future = futures_sorted.iloc[0]
+                self.futures_key = nearest_future['instrument_key']
+                self.futures_expiry_date = nearest_future['expiry']
+                logging.info(f"Nearest Futures Key: {self.futures_key}, Expiry: {self.futures_expiry_date}")
+                return self.futures_key,self.futures_expiry_date
+            else:
+                logging.warning(f"No Futures Found For Instrument: {self.name}")
+                return None
+        except Exception as e:
+            logging.error(f"Error fetching futures key: {e}")
+            return None
+
     def get_lot_size(self):
         futures = self.instruments[
             (self.instruments['segment'] == "NSE_FO") &
@@ -87,6 +113,9 @@ class Data_Processor:
     def get_option_key(self,order_type,index_price):
         if index_price is None:
             logging.warning("Index price not available for option key calculation")
+            return None
+        if order_type is None:
+            logging.warning("Order type not provided for option key retrieval")
             return None
         if order_type == 'CE':
             strike_price = math.floor(index_price / 100) * 100
