@@ -158,17 +158,20 @@ graph LR;
 ```bash
 git clone https://github.com/Omega-Xi/Algo-Trading.git
 cd Algo-Trading
-Install Dependencies
-bash
+```
+### Install Dependencies
+```bash
 pip install -r requirements.txt
-Dependencies
-text
+```
+## Dependencies
+```text
 upstox-client
 pandas
 numpy
 pytz
 python-dateutil
 websocket-client
+```
 ⚙ Configuration
 1. Configure API Credentials
 python
