@@ -99,14 +99,20 @@ graph TD;
     Recorder --> CSV[CSV Export];
     
     Alerts[Alerts] --> Notify[Notifications];
-Bot Lifecycle
+```
 
+### Bot Lifecycle
 
-
-
-
-
-
+```mermaid
+graph LR;
+    A[Authentication] --> B[Data Preload];
+    B --> C[Market Sync];
+    C --> D[WebSocket Connect];
+    D --> E[Signal Generation];
+    E --> F[Order Execution];
+    F --> G[Position Management];
+    G --> H[Exit & Record];
+```
 
 Layer Components
 🎯 Orchestration Layer
