@@ -80,18 +80,16 @@ This is a production-ready algorithmic trading bot built on the **Upstox API V3*
 
 ### System Overview
 
-The bot follows a clean layered architecture with separation of concerns:
-
 ```mermaid
 flowchart TD
-    A[Market Data] -->|WebSocket| B[Streamer V3]
-    B -->|Ticks| C[Tick Buffer]
-    C -->|Resample| D[Candle Factory]
-    D -->|OHLC| E[Indicator Engine]
-    E -->|Signals| F{Strategy Router}
+    A[Market Data] --> B[WebSocket Streamer]
+    B --> C[Tick Buffer]
+    C --> D[Candle Factory]
+    D --> E[Indicator Engine]
+    E --> F{Strategy Router}
     
-    F -->|Entry Signal| G[Position Sizing]
-    F -->|Exit Signal| H[Exit Manager]
+    F -->|Entry| G[Position Sizing]
+    F -->|Exit| H[Exit Manager]
     
     G --> I[Order Execution]
     I --> J[Upstox API]
@@ -99,17 +97,40 @@ flowchart TD
     H --> K[Trade Recorder]
     K --> L[CSV Export]
     
-    M[Alerts] -.-> N[Notification System]
-Layer Details
-Layer	Components	Key Functions
-🎯 Orchestration	Bot Controller	Entry/exit logic, state management, kill switch
-📈 Processing	Data Processor	Tick → candle aggregation, multi-timeframe sync
-📊 Indicators	Calculations	ATR, MACD, EMA, RSI, ADX, VWAP, Bollinger
-🎲 Strategy	Strategy Router	Signal generation, strategy selection
-🛡️ Risk	Risk Engine	Position sizing, trailing stop, margin check
-💾 Storage	Data Cache	Historical data, trade journal, performance metrics
-🔌 Connectivity	WebSocket/REST	Real-time streaming, order placement
-📢 Alerts	Notification	Trade events, errors, connection status
+    M[Alerts] --> N[Notifications]
+Layer Components
+🎯 Orchestration Layer
+
+Bot Controller - Entry/exit logic, state management, kill switch
+
+📈 Processing Layer
+
+Data Processor - Tick aggregation, candle formation, multi-timeframe sync
+
+📊 Indicator Layer
+
+Calculations Engine - ATR, MACD, EMA, RSI, ADX, VWAP, Bollinger Bands
+
+🎲 Strategy Layer
+
+Strategy Router - Signal generation, strategy selection
+
+🛡️ Risk Layer
+
+Risk Engine - Position sizing, trailing stop, margin verification
+
+💾 Storage Layer
+
+Data Cache - Historical data, intraday data, trade journal
+
+🔌 Connectivity Layer
+
+WebSocket/REST Client - Real-time streaming, order placement
+
+📢 Alert Layer
+
+Notification System - Trade events, errors, connection status
+
 Data Flow Pipeline
 
 
