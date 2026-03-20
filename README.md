@@ -184,6 +184,7 @@ CONFIGURATION = {
 }
 ```
 ### 2. Trading Parameters
+```
 Parameter	Default	Description
 DRY_RUN	True	Paper trading mode
 INTERVALS	["1","3","5","10","15"]	Candle timeframes
@@ -192,6 +193,7 @@ RISK_PERCENT	2.0	Risk per trade (%)
 R_TO_R_RATIO	2.0	Risk-reward ratio
 ENTRY_COOLDOWN	30	Seconds between trades
 SL_ATR_TIMEFRAME	"5"	ATR calculation timeframe
+```
 ### 3. Select Strategy
 ```python
 # strategies/__init__.py
