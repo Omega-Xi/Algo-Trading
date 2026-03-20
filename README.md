@@ -81,7 +81,7 @@ This is a production-ready algorithmic trading bot built on the **Upstox API V3*
 
 ### System Flow
 
-```mermaid
+``` mermaid
 graph TD;
     Market[Market Data] --> WS[WebSocket Streamer];
     WS --> Buffer[Tick Buffer];
@@ -103,7 +103,7 @@ graph TD;
 
 ### Bot Lifecycle
 
-```mermaid
+``` mermaid
 graph LR;
     A[Authentication] --> B[Data Preload];
     B --> C[Market Sync];
@@ -155,16 +155,18 @@ graph LR;
 - Upstox trading account
 
 ### Clone the Repository
-```bash
+``` bash
 git clone https://github.com/Omega-Xi/Algo-Trading.git
 cd Algo-Trading
 ```
+
 ### Install Dependencies
-```bash
+``` bash
 pip install -r requirements.txt
 ```
-## Dependencies
-```text
+
+### Dependencies
+```
 upstox-client
 pandas
 numpy
@@ -172,9 +174,14 @@ pytz
 python-dateutil
 websocket-client
 ```
+
+---
+
 ## ⚙ Configuration
+
 ### 1. Configure API Credentials
-```python
+
+``` python
 # configurations/trading_config.py
 CONFIGURATION = {
     'client_id': 'YOUR_CLIENT_ID',
@@ -183,19 +190,22 @@ CONFIGURATION = {
     'access_token': None
 }
 ```
+
 ### 2. Trading Parameters
-```
-Parameter	Default	Description
-DRY_RUN	True	Paper trading mode
-INTERVALS	["1","3","5","10","15"]	Candle timeframes
-ATR_MULTIPLIER	1.5	Stop-loss distance
-RISK_PERCENT	2.0	Risk per trade (%)
-R_TO_R_RATIO	2.0	Risk-reward ratio
-ENTRY_COOLDOWN	30	Seconds between trades
-SL_ATR_TIMEFRAME	"5"	ATR calculation timeframe
-```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `DRY_RUN` | `True` | Paper trading mode |
+| `INTERVALS` | `["1","3","5","10","15"]` | Candle timeframes |
+| `ATR_MULTIPLIER` | `1.5` | Stop-loss distance |
+| `RISK_PERCENT` | `2.0` | Risk per trade (%) |
+| `R_TO_R_RATIO` | `2.0` | Risk-reward ratio |
+| `ENTRY_COOLDOWN` | `30` | Seconds between trades |
+| `SL_ATR_TIMEFRAME` | `"5"` | ATR calculation timeframe |
+
 ### 3. Select Strategy
-```python
+
+``` python
 # strategies/__init__.py
 STRATEGY_MAP = {
     "MACD EMA": macd_ema_strategy,      # ← Current active
@@ -208,64 +218,63 @@ STRATEGY_MAP = {
 
 ACTIVE_STRATEGY = STRATEGY_MAP["MACD EMA"]
 ```
+
+---
+
 ## 🚀 Usage
+
 ### Dry Run Mode (Recommended First)
-```bash
+``` bash
 python main.py
 ```
+
 ### Live Trading Mode
-Set DRY_RUN = False in configurations/trading_config.py
-
-Ensure sufficient margin in your account
-
-Run:
-
-```bash
+1. Set `DRY_RUN = False` in `configurations/trading_config.py`
+2. Ensure sufficient margin in your account
+3. Run:
+``` bash
 python main.py
 ```
-## Bot Lifecycle Steps
-```
-Authentication: OAuth token generation
 
-Data Preload: Load historical and intraday futures data
+### Bot Lifecycle Steps
+1. **Authentication**: OAuth token generation
+2. **Data Preload**: Load historical and intraday futures data
+3. **Market Sync**: Wait for 15-minute mark
+4. **WebSocket Connection**: Start streaming real-time data
+5. **Signal Generation**: Strategy analysis on each candle
+6. **Order Execution**: Place orders when signals trigger
+7. **Position Management**: Monitor and update trailing stops
+8. **Exit**: Close position on stop-loss or target hit
 
-Market Sync: Wait for 15-minute mark
+---
 
-WebSocket Connection: Start streaming real-time data
-
-Signal Generation: Strategy analysis on each candle
-
-Order Execution: Place orders when signals trigger
-
-Position Management: Monitor and update trailing stops
-
-Exit: Close position on stop-loss or target hit
-```
 ## 🛡 Risk Management
-Position Sizing Formula
-```python
+
+### Position Sizing Formula
+``` python
 quantity = (available_margin * RISK_PERCENT/100) / (entry_price - trigger_price)
 ```
-## Trailing Stop Logic
-```python
+
+### Trailing Stop Logic
+``` python
 def update_stop_loss(self):
     current_atr = self.candle_df['5']['atr'].iloc[-1]
     new_trigger = self.highest_price - (current_atr * ATR_MULTIPLIER)
     self.trigger_price = max(self.trigger_price, new_trigger)
 ```
-## Safety Mechanisms
-### Position validation before entry
 
-### Thread-safe operations with locks
+### Safety Mechanisms
+- Position validation before entry
+- Thread-safe operations with locks
+- Kill switch for emergency shutdown
+- Auto-reconnect for WebSocket
+- Cooldown period between trades
 
-### Kill switch for emergency shutdown
+---
 
-### Auto-reconnect for WebSocket
+## 📊 Performance Reporting
 
-### Cooldown period between trades
-
-📊 Performance Reporting
-python
+``` python
 # Trade history export
 export_trades_to_csv(transcriber.trades)
 # → trades_YYYYMMDD_HHMMSS.csv
@@ -273,32 +282,36 @@ export_trades_to_csv(transcriber.trades)
 # Performance report
 generate_performance_report(transcriber)
 # Includes: win rate, profit factor, Sharpe ratio, total P&L
-Sample CSV Output
-Timestamp	Symbol	Type	Entry Price	Exit Price	Quantity	P&L	Exit Reason
-2025-03-20 10:15:00	NIFTY CE	BUY	125.50	140.25	75	+1106.25	TARGET_HIT
-2025-03-20 11:30:00	NIFTY PE	BUY	98.75	85.00	100	-1375.00	STOPLOSS_HIT
-🤝 Contributing
-Fork the repository
+```
 
-Create a feature branch: git checkout -b feature/amazing-feature
+### Sample CSV Output
 
-Commit changes: git commit -m 'Add amazing feature'
+| Timestamp | Symbol | Type | Entry Price | Exit Price | Quantity | P&L | Exit Reason |
+|-----------|--------|------|-------------|------------|----------|-----|-------------|
+| 2025-03-20 10:15:00 | NIFTY CE | BUY | 125.50 | 140.25 | 75 | +1106.25 | TARGET_HIT |
+| 2025-03-20 11:30:00 | NIFTY PE | BUY | 98.75 | 85.00 | 100 | -1375.00 | STOPLOSS_HIT |
 
-Push: git push origin feature/amazing-feature
+---
 
-Open a Pull Request
+## 🤝 Contributing
 
-Development Guidelines
-Follow PEP 8 style guide
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Commit changes**: `git commit -m 'Add amazing feature'`
+4. **Push**: `git push origin feature/amazing-feature`
+5. **Open a Pull Request**
 
-Add docstrings to new functions
+### Development Guidelines
+- Follow PEP 8 style guide
+- Add docstrings to new functions
+- Update README with new features
+- Test thoroughly in dry run mode
 
-Update README with new features
+---
 
-Test thoroughly in dry run mode
+## 📝 License
 
-📝 License
-text
+```
 MIT License
 
 Copyright (c) 2025 Omega-Xi
@@ -320,29 +333,34 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-⚠ Disclaimer
-Trading involves significant risk of loss and is not suitable for all investors.
+```
 
-Past performance does not guarantee future results
+---
 
-This software is for educational purposes
+## ⚠ Disclaimer
 
-Test thoroughly in dry run mode before live trading
+**Trading involves significant risk of loss and is not suitable for all investors.** 
 
-The author is not responsible for any financial losses incurred
+- Past performance does not guarantee future results
+- This software is for educational purposes
+- Test thoroughly in dry run mode before live trading
+- The author is not responsible for any financial losses incurred
+- Always verify orders and monitor the bot during live trading
+- Use at your own risk
 
-Always verify orders and monitor the bot during live trading
+---
 
-Use at your own risk
+## 📞 Support & Contact
 
-📞 Support & Contact
-GitHub Issues: Report bugs or request features
+- **GitHub Issues**: [Report bugs or request features](https://github.com/Omega-Xi/Algo-Trading/issues)
+- **Email**: omega.xi@example.com
 
-Email: omega.xi@example.com
+---
 
 <div align="center">
+
 Made with ❤️ by Omega-Xi
 
-⭐ If this project helped you, please star the repository! ⭐
+⭐ **If this project helped you, please star the repository!** ⭐
 
-</div> ```
+</div>
