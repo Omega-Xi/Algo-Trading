@@ -289,11 +289,10 @@ generate_performance_report(transcriber)
 
 ### Sample CSV Output
 
-
-instrument	type	entry_time	entry_price	quantity	trigger_price	target_price	exit_time	exit_price	pnl	status	exit_reason	gross_pnl	net_pnl	charges	_id_counter	trade_id
-NSE_FO|57787	PE	2026-03-12 12:40:03.915706+05:30	285.45	195	257	342	2026-03-12 13:24:03.873000+05:30	256.75	-5685.646881149998	CLOSED	STOPLOSS_HIT	-5596.499999999998	-5685.646881149998	89.14688115000001	0	1
-NSE_FO|57787	PE	2026-03-12 14:00:06.543682+05:30	263.1	195	235	319	2026-03-12 14:50:44.673000+05:30	319.5	10905.614804549996	CLOSED	TARGET_HIT	10997.999999999996	10905.614804549996	92.38519545	0	2
-
+| instrument | type | entry_time | entry_price | quantity | trigger_price | target_price | exit_time | exit_price | pnl | status | exit_reason | gross_pnl | net_pnl | charges | _id_counter | trade_id |
+|------------|------|------------|-------------|----------|---------------|--------------|-----------|------------|-----|--------|-------------|-----------|---------|---------|-------------|----------|
+| NSE_FO\|57787 | PE | 2026-03-12 12:40:03.915706+05:30 | 285.45 | 195 | 257 | 342 | 2026-03-12 13:24:03.873000+05:30 | 256.75 | -5685.65 | CLOSED | STOPLOSS_HIT | -5596.50 | -5685.65 | 89.15 | 0 | 1 |
+| NSE_FO\|57787 | PE | 2026-03-12 14:00:06.543682+05:30 | 263.10 | 195 | 235 | 319 | 2026-03-12 14:50:44.673000+05:30 | 319.50 | 10905.61 | CLOSED | TARGET_HIT | 10998.00 | 10905.61 | 92.39 | 0 | 2 |
 ---
 
 ## 🤝 Contributing
