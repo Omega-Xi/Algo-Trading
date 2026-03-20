@@ -355,7 +355,7 @@ SOFTWARE.
 ## 📞 Support & Contact
 
 - **GitHub Issues**: [Report bugs or request features](https://github.com/Omega-Xi/Algo-Trading/issues)
-- **Email**: omega.xi@example.com
+- **Email**: omegaxi@omegaxi.in
 
 ---
 
