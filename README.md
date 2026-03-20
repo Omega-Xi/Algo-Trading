@@ -53,6 +53,7 @@ This is a production-ready algorithmic trading bot built on the **Upstox API V3*
 - Historical data preloading for accurate analysis
 
 ### 🎯 Trading Strategies
+
 | Strategy | Description | Status |
 |----------|-------------|--------|
 | **MACD EMA** | MACD crossover with EMA smoothing | 🟢 **Active** |
@@ -78,26 +79,35 @@ This is a production-ready algorithmic trading bot built on the **Upstox API V3*
 
 ## 🏗 Architecture
 
-### System Overview
+### System Flow
 
 ```mermaid
-flowchart TD
-    A[Market Data] --> B[WebSocket Streamer]
-    B --> C[Tick Buffer]
-    C --> D[Candle Factory]
-    D --> E[Indicator Engine]
-    E --> F{Strategy Router}
+graph TD;
+    Market[Market Data] --> WS[WebSocket Streamer];
+    WS --> Buffer[Tick Buffer];
+    Buffer --> Candles[Candle Factory];
+    Candles --> Indicators[Indicator Engine];
+    Indicators --> Strategy{Strategy Router};
     
-    F -->|Entry| G[Position Sizing]
-    F -->|Exit| H[Exit Manager]
+    Strategy -->|Entry Signal| Sizing[Position Sizing];
+    Strategy -->|Exit Signal| Exit[Exit Manager];
     
-    G --> I[Order Execution]
-    I --> J[Upstox API]
+    Sizing --> Order[Order Execution];
+    Order --> API[Upstox API];
     
-    H --> K[Trade Recorder]
-    K --> L[CSV Export]
+    Exit --> Recorder[Trade Recorder];
+    Recorder --> CSV[CSV Export];
     
-    M[Alerts] --> N[Notifications]
+    Alerts[Alerts] --> Notify[Notifications];
+Bot Lifecycle
+
+
+
+
+
+
+
+
 Layer Components
 🎯 Orchestration Layer
 
@@ -131,17 +141,6 @@ WebSocket/REST Client - Real-time streaming, order placement
 
 Notification System - Trade events, errors, connection status
 
-Data Flow Pipeline
-
-
-
-
-
-
-
-
-
-
 Thread Safety
 entry_lock - Prevents overlapping entry signals
 
@@ -174,19 +173,15 @@ python-dateutil
 websocket-client
 ⚙ Configuration
 1. Configure API Credentials
-Create a configuration file or set environment variables:
-
 python
 # configurations/trading_config.py
 CONFIGURATION = {
     'client_id': 'YOUR_CLIENT_ID',
     'api_key': 'YOUR_API_KEY',
     'redirect_uri': 'YOUR_REDIRECT_URI',
-    'access_token': None  # Will be generated via OAuth
+    'access_token': None
 }
 2. Trading Parameters
-Adjust these in configurations/trading_config.py:
-
 Parameter	Default	Description
 DRY_RUN	True	Paper trading mode
 INTERVALS	["1","3","5","10","15"]	Candle timeframes
@@ -196,9 +191,8 @@ R_TO_R_RATIO	2.0	Risk-reward ratio
 ENTRY_COOLDOWN	30	Seconds between trades
 SL_ATR_TIMEFRAME	"5"	ATR calculation timeframe
 3. Select Strategy
-Choose your active strategy in strategies/__init__.py:
-
 python
+# strategies/__init__.py
 STRATEGY_MAP = {
     "MACD EMA": macd_ema_strategy,      # ← Current active
     "MACD RSI": macd_rsi_strategy,
@@ -213,8 +207,6 @@ ACTIVE_STRATEGY = STRATEGY_MAP["MACD EMA"]
 Dry Run Mode (Recommended First)
 bash
 python main.py
-This will run the bot in simulation mode without placing real orders.
-
 Live Trading Mode
 Set DRY_RUN = False in configurations/trading_config.py
 
@@ -224,15 +216,7 @@ Run:
 
 bash
 python main.py
-Bot Lifecycle
-
-
-
-
-
-
-
-
+Bot Lifecycle Steps
 Authentication: OAuth token generation
 
 Data Preload: Load historical and intraday futures data
@@ -249,7 +233,7 @@ Position Management: Monitor and update trailing stops
 
 Exit: Close position on stop-loss or target hit
 
-🛡 Risk Management Features
+🛡 Risk Management
 Position Sizing Formula
 python
 quantity = (available_margin * RISK_PERCENT/100) / (entry_price - trigger_price)
@@ -260,19 +244,17 @@ def update_stop_loss(self):
     new_trigger = self.highest_price - (current_atr * ATR_MULTIPLIER)
     self.trigger_price = max(self.trigger_price, new_trigger)
 Safety Mechanisms
-✅ Position validation before entry
+Position validation before entry
 
-✅ Thread-safe operations with locks
+Thread-safe operations with locks
 
-✅ Kill switch for emergency shutdown
+Kill switch for emergency shutdown
 
-✅ Auto-reconnect for WebSocket
+Auto-reconnect for WebSocket
 
-✅ Cooldown period between trades
+Cooldown period between trades
 
 📊 Performance Reporting
-After each trading session (or on bot shutdown), reports are automatically generated:
-
 python
 # Trade history export
 export_trades_to_csv(transcriber.trades)
@@ -286,8 +268,6 @@ Timestamp	Symbol	Type	Entry Price	Exit Price	Quantity	P&L	Exit Reason
 2025-03-20 10:15:00	NIFTY CE	BUY	125.50	140.25	75	+1106.25	TARGET_HIT
 2025-03-20 11:30:00	NIFTY PE	BUY	98.75	85.00	100	-1375.00	STOPLOSS_HIT
 🤝 Contributing
-Contributions are welcome! Here's how you can help:
-
 Fork the repository
 
 Create a feature branch: git checkout -b feature/amazing-feature
@@ -308,8 +288,6 @@ Update README with new features
 Test thoroughly in dry run mode
 
 📝 License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 text
 MIT License
 
@@ -350,15 +328,11 @@ Use at your own risk
 📞 Support & Contact
 GitHub Issues: Report bugs or request features
 
-Documentation: Wiki
-
 Email: omega.xi@example.com
 
 <div align="center">
 Made with ❤️ by Omega-Xi
 
 ⭐ If this project helped you, please star the repository! ⭐
-
-Report Bug · Request Feature
 
 </div> ```
