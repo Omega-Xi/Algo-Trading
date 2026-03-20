@@ -280,7 +280,7 @@ def update_stop_loss(self):
 ``` python
 # Trade history export
 export_trades_to_csv(transcriber.trades)
-# → trades_YYYYMMDD_HHMMSS.csv
+# → trade_log.csv
 
 # Performance report
 generate_performance_report(transcriber)
@@ -289,10 +289,10 @@ generate_performance_report(transcriber)
 
 ### Sample CSV Output
 
-| Timestamp | Symbol | Type | Entry Price | Exit Price | Quantity | P&L | Exit Reason |
-|-----------|--------|------|-------------|------------|----------|-----|-------------|
-| 2025-03-20 10:15:00 | NIFTY CE | BUY | 125.50 | 140.25 | 75 | +1106.25 | TARGET_HIT |
-| 2025-03-20 11:30:00 | NIFTY PE | BUY | 98.75 | 85.00 | 100 | -1375.00 | STOPLOSS_HIT |
+
+instrument	type	entry_time	entry_price	quantity	trigger_price	target_price	exit_time	exit_price	pnl	status	exit_reason	gross_pnl	net_pnl	charges	_id_counter	trade_id
+NSE_FO|57787	PE	2026-03-12 12:40:03.915706+05:30	285.45	195	257	342	2026-03-12 13:24:03.873000+05:30	256.75	-5685.646881149998	CLOSED	STOPLOSS_HIT	-5596.499999999998	-5685.646881149998	89.14688115000001	0	1
+NSE_FO|57787	PE	2026-03-12 14:00:06.543682+05:30	263.1	195	235	319	2026-03-12 14:50:44.673000+05:30	319.5	10905.614804549996	CLOSED	TARGET_HIT	10997.999999999996	10905.614804549996	92.38519545	0	2
 
 ---
 
