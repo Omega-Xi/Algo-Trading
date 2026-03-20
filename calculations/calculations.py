@@ -54,7 +54,8 @@ def calculate_macd(candle_df):
 
 # --- EMA Calculation ---
 def calculate_ema(df, period=200):
-    df[f"ema{period}"] = df["close"].ewm(span=period, adjust=False).mean()
+    alpha = 2 / (period + 1)
+    df[f"ema{period}"] = df["close"].ewm(alpha=alpha, adjust=False).mean()
     return df
 
 # --- RSI Calculation ---

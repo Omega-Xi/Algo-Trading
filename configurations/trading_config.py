@@ -2,7 +2,7 @@ import upstox_client
 from strategies.strategies import *
 
 CONFIGURATION=upstox_client.Configuration()
-DRY_RUN_MARGIN=323023.70
+DRY_RUN_MARGIN=306415.82
 DRY_RUN=True
 NAME="NIFTY"
 MARKET_OPEN_TIME="09:15"
