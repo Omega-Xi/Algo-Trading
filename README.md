@@ -252,15 +252,18 @@ python -m tests.test_bot
 
 ### Position Sizing Formula
 ``` python
-quantity = (available_margin * RISK_PERCENT/100) / (entry_price - trigger_price)
+max_risk=available_margin * trading_config.RISK_PERCENT/100
+max_lots_by_risk=int(max_risk//risk_per_lot)
+max_lots_by_margin=int(available_margin//(option_price*lot_size))
+final_lots = min(max_lots_by_risk, max_lots_by_margin)
+quantity=final_lots*lot_size
 ```
 
 ### Trailing Stop Logic
 ``` python
 def update_stop_loss(self):
-    current_atr = self.candle_df['5']['atr'].iloc[-1]
-    new_trigger = self.highest_price - (current_atr * ATR_MULTIPLIER)
-    self.trigger_price = max(self.trigger_price, new_trigger)
+    new_trigger_price = calculations.calculate_trigger_price(self.candle_df[SL_ATR_TIMEFRAME]['atr'].iloc[-1],self.highest_price,self.option_delta)
+    self.trigger_price=max(self.trigger_price,new_trigger_price)
 ```
 
 ### Safety Mechanisms
