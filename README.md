@@ -99,8 +99,10 @@ graph TD;
     Recorder --> CSV[CSV Export];
     
     Alerts[Alerts] --> Notify[Notifications];
-```
 Bot Lifecycle
+
+
+
 
 
 
