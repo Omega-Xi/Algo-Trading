@@ -172,9 +172,9 @@ pytz
 python-dateutil
 websocket-client
 ```
-⚙ Configuration
-1. Configure API Credentials
-python
+## ⚙ Configuration
+### 1. Configure API Credentials
+```python
 # configurations/trading_config.py
 CONFIGURATION = {
     'client_id': 'YOUR_CLIENT_ID',
@@ -182,7 +182,8 @@ CONFIGURATION = {
     'redirect_uri': 'YOUR_REDIRECT_URI',
     'access_token': None
 }
-2. Trading Parameters
+```
+### 2. Trading Parameters
 Parameter	Default	Description
 DRY_RUN	True	Paper trading mode
 INTERVALS	["1","3","5","10","15"]	Candle timeframes
@@ -191,8 +192,8 @@ RISK_PERCENT	2.0	Risk per trade (%)
 R_TO_R_RATIO	2.0	Risk-reward ratio
 ENTRY_COOLDOWN	30	Seconds between trades
 SL_ATR_TIMEFRAME	"5"	ATR calculation timeframe
-3. Select Strategy
-python
+### 3. Select Strategy
+```python
 # strategies/__init__.py
 STRATEGY_MAP = {
     "MACD EMA": macd_ema_strategy,      # ← Current active
@@ -204,19 +205,22 @@ STRATEGY_MAP = {
 }
 
 ACTIVE_STRATEGY = STRATEGY_MAP["MACD EMA"]
-🚀 Usage
-Dry Run Mode (Recommended First)
-bash
+```
+## 🚀 Usage
+### Dry Run Mode (Recommended First)
+```bash
 python main.py
-Live Trading Mode
+```
+### Live Trading Mode
 Set DRY_RUN = False in configurations/trading_config.py
 
 Ensure sufficient margin in your account
 
 Run:
 
-bash
+```bash
 python main.py
+```
 Bot Lifecycle Steps
 Authentication: OAuth token generation
 
