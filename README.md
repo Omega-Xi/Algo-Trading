@@ -225,7 +225,7 @@ STRATEGY=STRATEGY_MAP["MACD EMA"]
 
 ### Dry Run Mode (Recommended First)
 ``` bash
-python main.py
+python -m tests.test_bot
 ```
 
 ### Live Trading Mode
@@ -233,7 +233,7 @@ python main.py
 2. Ensure sufficient margin in your account
 3. Run:
 ``` bash
-python main.py
+python -m tests.test_bot
 ```
 
 ### Bot Lifecycle Steps
