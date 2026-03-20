@@ -18,7 +18,7 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Architecture](#architecture)
-- [Strategies](#strategies)
+- [Strategies](#trading-strategies)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
