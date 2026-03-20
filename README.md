@@ -207,16 +207,16 @@ CONFIGURATION = {
 
 ``` python
 # strategies/__init__.py
-STRATEGY_MAP = {
-    "MACD EMA": macd_ema_strategy,      # ← Current active
-    "MACD RSI": macd_rsi_strategy,
-    "MACD ADX": macd_adx_strategy,
-    "VWAP RSI": vwap_rsi_strategy,
-    "Bollinger RSI": bollinger_rsi_mean_reversion,
-    "Golden Strategy": golden_strategy
+STRATEGY_MAP={
+    "MACD EMA":macd_ema_strategy, # current active
+    "MACD RSI":macd_rsi_strategy,
+    "MACD ADX":macd_adx_strategy,
+    "VWAP RSI":vwap_rsi_strategy,
+    "BOLLINGER RSI":bollinger_rsi_mean_reversion,
+    "DI ADX":di_adx_strategy,
+    "GOLDEN STRATEGY":golden_strategy
 }
-
-ACTIVE_STRATEGY = STRATEGY_MAP["MACD EMA"]
+STRATEGY=STRATEGY_MAP["MACD EMA"]
 ```
 
 ---
