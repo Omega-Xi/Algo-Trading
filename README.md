@@ -223,7 +223,8 @@ Run:
 ```bash
 python main.py
 ```
-Bot Lifecycle Steps
+## Bot Lifecycle Steps
+```
 Authentication: OAuth token generation
 
 Data Preload: Load historical and intraday futures data
@@ -239,27 +240,29 @@ Order Execution: Place orders when signals trigger
 Position Management: Monitor and update trailing stops
 
 Exit: Close position on stop-loss or target hit
-
-🛡 Risk Management
+```
+## 🛡 Risk Management
 Position Sizing Formula
-python
+```python
 quantity = (available_margin * RISK_PERCENT/100) / (entry_price - trigger_price)
-Trailing Stop Logic
-python
+```
+## Trailing Stop Logic
+```python
 def update_stop_loss(self):
     current_atr = self.candle_df['5']['atr'].iloc[-1]
     new_trigger = self.highest_price - (current_atr * ATR_MULTIPLIER)
     self.trigger_price = max(self.trigger_price, new_trigger)
-Safety Mechanisms
-Position validation before entry
+```
+## Safety Mechanisms
+### Position validation before entry
 
-Thread-safe operations with locks
+### Thread-safe operations with locks
 
-Kill switch for emergency shutdown
+### Kill switch for emergency shutdown
 
-Auto-reconnect for WebSocket
+### Auto-reconnect for WebSocket
 
-Cooldown period between trades
+### Cooldown period between trades
 
 📊 Performance Reporting
 python
