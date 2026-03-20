@@ -114,56 +114,48 @@ graph LR;
     G --> H[Exit & Record];
 ```
 
-Layer Components
-🎯 Orchestration Layer
+### Layer Components
 
-Bot Controller - Entry/exit logic, state management, kill switch
+**🎯 Orchestration Layer**
+- Bot Controller - Entry/exit logic, state management, kill switch
 
-📈 Processing Layer
+**📈 Processing Layer**
+- Data Processor - Tick aggregation, candle formation, multi-timeframe sync
 
-Data Processor - Tick aggregation, candle formation, multi-timeframe sync
+**📊 Indicator Layer**
+- Calculations Engine - ATR, MACD, EMA, RSI, ADX, VWAP, Bollinger Bands
 
-📊 Indicator Layer
+**🎲 Strategy Layer**
+- Strategy Router - Signal generation, strategy selection
 
-Calculations Engine - ATR, MACD, EMA, RSI, ADX, VWAP, Bollinger Bands
+**🛡️ Risk Layer**
+- Risk Engine - Position sizing, trailing stop, margin verification
 
-🎲 Strategy Layer
+**💾 Storage Layer**
+- Data Cache - Historical data, intraday data, trade journal
 
-Strategy Router - Signal generation, strategy selection
+**🔌 Connectivity Layer**
+- WebSocket/REST Client - Real-time streaming, order placement
 
-🛡️ Risk Layer
+**📢 Alert Layer**
+- Notification System - Trade events, errors, connection status
 
-Risk Engine - Position sizing, trailing stop, margin verification
+### Thread Safety
+- `entry_lock` - Prevents overlapping entry signals
+- `exit_lock` - Ensures atomic exit operations
+- `threading.Lock()` for critical sections
 
-💾 Storage Layer
+---
 
-Data Cache - Historical data, intraday data, trade journal
+## 📦 Installation
 
-🔌 Connectivity Layer
+### Prerequisites
+- Python 3.8 or higher
+- Upstox API credentials (Client ID, API Key, Redirect URI)
+- Upstox trading account
 
-WebSocket/REST Client - Real-time streaming, order placement
-
-📢 Alert Layer
-
-Notification System - Trade events, errors, connection status
-
-Thread Safety
-entry_lock - Prevents overlapping entry signals
-
-exit_lock - Ensures atomic exit operations
-
-threading.Lock() for critical sections
-
-📦 Installation
-Prerequisites
-Python 3.8 or higher
-
-Upstox API credentials (Client ID, API Key, Redirect URI)
-
-Upstox trading account
-
-Clone the Repository
-bash
+### Clone the Repository
+```bash
 git clone https://github.com/Omega-Xi/Algo-Trading.git
 cd Algo-Trading
 Install Dependencies
