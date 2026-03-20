@@ -77,25 +77,26 @@ This is a production-ready algorithmic trading bot built on the **Upstox API V3*
 ---
 
 ## 🏗 Architecture
-┌─────────────────────────────────────────────────────────────┐
-│ PRESENTATION LAYER │
-│ CLI Interface · Alerts System │
-├─────────────────────────────────────────────────────────────┤
-│ BOT ORCHESTRATOR │
-│ Entry/Exit Logic · Position Management │
-├─────────────────────────────────────────────────────────────┤
-│ DATA PROCESSOR │
+
+┌───────────────────────────────────────────────┐
+│               PRESENTATION LAYER              │
+│           CLI Interface · Alerts System       │
+├───────────────────────────────────────────────┤
+│               BOT ORCHESTRATOR                │
+│       Entry/Exit Logic · Position Management  │
+├───────────────────────────────────────────────┤
+│                DATA PROCESSOR                 │
 │ Tick Aggregation · Candle Formation · Indicators │
-├─────────────────────────────────────────────────────────────┤
-│ DATA STORAGE │
+├───────────────────────────────────────────────┤
+│                DATA STORAGE                   │
 │ Historical Data · Intraday Data · Trade Journal │
-├─────────────────────────────────────────────────────────────┤
-│ MARKET DATA STREAMER V3 │
-│ WebSocket Connection · Real-time Ticks │
-├─────────────────────────────────────────────────────────────┤
-│ UPSTOX API │
-│ REST + WebSocket · Order Execution │
-└─────────────────────────────────────────────────────────────┘
+├───────────────────────────────────────────────┤
+│          MARKET DATA STREAMER V3              │
+│       WebSocket Connection · Real-time Ticks  │
+├───────────────────────────────────────────────┤
+│                  UPSTOX API                   │
+│       REST + WebSocket · Order Execution      │
+└───────────────────────────────────────────────┘
 
 text
 
