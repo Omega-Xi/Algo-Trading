@@ -78,39 +78,66 @@ This is a production-ready algorithmic trading bot built on the **Upstox API V3*
 
 ## 🏗 Architecture
 
-┌───────────────────────────────────────────────┐
-│               PRESENTATION LAYER              │
-│           CLI Interface · Alerts System       │
-├───────────────────────────────────────────────┤
-│               BOT ORCHESTRATOR                │
-│       Entry/Exit Logic · Position Management  │
-├───────────────────────────────────────────────┤
-│                DATA PROCESSOR                 │
-│ Tick Aggregation · Candle Formation · Indicators │
-├───────────────────────────────────────────────┤
-│                DATA STORAGE                   │
-│ Historical Data · Intraday Data · Trade Journal │
-├───────────────────────────────────────────────┤
-│          MARKET DATA STREAMER V3              │
-│       WebSocket Connection · Real-time Ticks  │
-├───────────────────────────────────────────────┤
-│                  UPSTOX API                   │
-│       REST + WebSocket · Order Execution      │
-└───────────────────────────────────────────────┘
+### System Overview
 
-text
+The bot follows a clean layered architecture with separation of concerns:
 
----
+```mermaid
+flowchart TD
+    A[Market Data] -->|WebSocket| B[Streamer V3]
+    B -->|Ticks| C[Tick Buffer]
+    C -->|Resample| D[Candle Factory]
+    D -->|OHLC| E[Indicator Engine]
+    E -->|Signals| F{Strategy Router}
+    
+    F -->|Entry Signal| G[Position Sizing]
+    F -->|Exit Signal| H[Exit Manager]
+    
+    G --> I[Order Execution]
+    I --> J[Upstox API]
+    
+    H --> K[Trade Recorder]
+    K --> L[CSV Export]
+    
+    M[Alerts] -.-> N[Notification System]
+Layer Details
+Layer	Components	Key Functions
+🎯 Orchestration	Bot Controller	Entry/exit logic, state management, kill switch
+📈 Processing	Data Processor	Tick → candle aggregation, multi-timeframe sync
+📊 Indicators	Calculations	ATR, MACD, EMA, RSI, ADX, VWAP, Bollinger
+🎲 Strategy	Strategy Router	Signal generation, strategy selection
+🛡️ Risk	Risk Engine	Position sizing, trailing stop, margin check
+💾 Storage	Data Cache	Historical data, trade journal, performance metrics
+🔌 Connectivity	WebSocket/REST	Real-time streaming, order placement
+📢 Alerts	Notification	Trade events, errors, connection status
+Data Flow Pipeline
 
-## 📦 Installation
 
-### Prerequisites
-- Python 3.8 or higher
-- Upstox API credentials (Client ID, API Key, Redirect URI)
-- Upstox trading account
 
-### Clone the Repository
-```bash
+
+
+
+
+
+
+
+Thread Safety
+entry_lock - Prevents overlapping entry signals
+
+exit_lock - Ensures atomic exit operations
+
+threading.Lock() for critical sections
+
+📦 Installation
+Prerequisites
+Python 3.8 or higher
+
+Upstox API credentials (Client ID, API Key, Redirect URI)
+
+Upstox trading account
+
+Clone the Repository
+bash
 git clone https://github.com/Omega-Xi/Algo-Trading.git
 cd Algo-Trading
 Install Dependencies
@@ -177,6 +204,14 @@ Run:
 bash
 python main.py
 Bot Lifecycle
+
+
+
+
+
+
+
+
 Authentication: OAuth token generation
 
 Data Preload: Load historical and intraday futures data
@@ -298,7 +333,9 @@ Documentation: Wiki
 
 Email: omega.xi@example.com
 
-<div align="center"> Made with ❤️ by Omega-Xi
+<div align="center">
+Made with ❤️ by Omega-Xi
+
 ⭐ If this project helped you, please star the repository! ⭐
 
 Report Bug · Request Feature
