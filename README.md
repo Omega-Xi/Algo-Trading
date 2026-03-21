@@ -187,7 +187,7 @@ api_key='YOUR_API_KEY'
 api_secret='YOUR_API_SECRET'
 redirect_url='YOUR_REDIRECT_URI'
 state='YOUR_STATE_VARIABLE'
-access_token=''
+access_token='YOUR_ACCESS_TOKEN'
 
 ```
 
