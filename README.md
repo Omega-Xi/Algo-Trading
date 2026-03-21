@@ -208,7 +208,7 @@ access_token='YOUR_ACCESS_TOKEN'
 ### 3. Select Strategy
 
 ``` python
-# strategies/__init__.py
+# configuration/trading_config.py
 STRATEGY_MAP={
     "MACD EMA":macd_ema_strategy, # current active
     "MACD RSI":macd_rsi_strategy,
