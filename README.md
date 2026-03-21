@@ -182,13 +182,13 @@ websocket-client
 ### 1. Configure API Credentials
 
 ``` python
-# configurations/trading_config.py
-CONFIGURATION = {
-    'client_id': 'YOUR_CLIENT_ID',
-    'api_key': 'YOUR_API_KEY',
-    'redirect_uri': 'YOUR_REDIRECT_URI',
-    'access_token': None
-}
+# create .env file in root folder
+api_key='YOUR_API_KEY'
+api_secret='YOUR_API_SECRET'
+redirect_url='YOUR_REDIRECT_URI'
+state='YOUR_STATE_VARIABLE'
+access_token=''
+
 ```
 
 ### 2. Trading Parameters
