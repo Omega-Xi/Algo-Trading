@@ -39,7 +39,7 @@ class Data_Collector:
 
     def get_historic_data(self,instrument_key):
         today=date.today()
-        previous_day=today-timedelta(days=7)
+        previous_day=today-timedelta(days=8)
         str_today=str(today)
         str_previous_day=str(previous_day)
         apiInstance = upstox_client.HistoryV3Api(upstox_client.ApiClient(trading_config.CONFIGURATION))

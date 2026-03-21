@@ -43,7 +43,6 @@ def calculate_exit_price(option_price,trigger_price):
     exit_price=math.floor(option_price + (option_price - trigger_price) * trading_config.R_TO_R_RATIO)
     return exit_price
 
-# --- MACD Calculation ---
 def calculate_macd(candle_df):
     df = candle_df.copy()
     df["ema12"] = df["close"].ewm(span=12,adjust=False).mean()
@@ -52,14 +51,11 @@ def calculate_macd(candle_df):
     df["signal"] = df["macd"].ewm(span=9,adjust=False).mean()
     return df
 
-# --- EMA Calculation ---
 def calculate_ema(df, ema_period=200, smoothing_period=9):
-    # First calculate EMA
-    df[f"ema{ema_period}"] = df["close"].ewm(span=ema_period, adjust=False).mean()
-    df[f"ema{ema_period}"] = df[f"ema{ema_period}"].rolling(window=smoothing_period).mean()
+    df[f"raw_ema{ema_period}"] = df["close"].ewm(span=ema_period, adjust=False).mean()
+    df[f"ema{ema_period}"] = df[f"raw_ema{ema_period}"].rolling(window=smoothing_period).mean()
     return df
 
-# --- RSI Calculation ---
 def calculate_rsi(df):
     delta = df["close"].diff()
     gain = delta.where(delta > 0, 0)
@@ -70,7 +66,6 @@ def calculate_rsi(df):
     df["rsi"] = 100 - (100 / (1 + rs.fillna(0)))
     return df
 
-# --- ATR Calculation (RMA) ---
 def calculate_atr(df):
     df['high_low']   = df['high'] - df['low']
     df['high_close'] = (df['high'] - df['close'].shift()).abs()
@@ -79,7 +74,6 @@ def calculate_atr(df):
     df['atr'] = df['tr'].ewm(alpha=1/14, adjust=False).mean()
     return df
 
-# --- DX and ADX (RMA) ---
 def calculate_adx(df):
     if 'atr' not in df.columns:
         df = calculate_atr(df)
@@ -96,7 +90,6 @@ def calculate_adx(df):
     df['adx'] = df['dx'].ewm(alpha=1/14, adjust=False).mean()
     return df
 
-# --- VWAP Calculation ---
 def calculate_vwap(df):
     df["typical_price"] = (df["high"] + df["low"] + df["close"]) / 3
     df["date"] = df.index.date
@@ -105,7 +98,6 @@ def calculate_vwap(df):
     df["vwap"] = df["cum_vol_price"] / df["cum_volume"]
     return df
 
-# --- Bollinger Bands Calculation ---
 def calculate_bollinger_bands(df, period=20, std_dev=2):
     df["sma"] = df["close"].rolling(window=period).mean()
     df["std"] = df["close"].rolling(window=period).std()
@@ -120,5 +112,5 @@ def calculate_indicators(candle_df):
     df=calculate_adx(df)
     df=calculate_vwap(df)
     df=calculate_bollinger_bands(df)
-    df = calculate_ema(df, period=200)
+    df = calculate_ema(df, ema_period=200)
     return df

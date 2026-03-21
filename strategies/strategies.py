@@ -17,8 +17,8 @@ def pre_check_validation(bot):
     elif not bot.can_enter_trade():
         print("Bot in Sleep Mode",end="\r") 
         return False
-    elif bot.index_price is None: 
-        logging.warning("Index price not available, Skipping signal check.") 
+    elif bot.futures_price is None: 
+        logging.warning("Futures price not available, Skipping signal check.") 
         return False
     else:
         return True
