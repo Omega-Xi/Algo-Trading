@@ -193,6 +193,8 @@ access_token='YOUR_ACCESS_TOKEN'
 
 ### 2. Trading Parameters
 
+`configurations/trading_config.py`
+
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `DRY_RUN` | `True` | Paper trading mode |
