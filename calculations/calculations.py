@@ -52,8 +52,14 @@ def calculate_macd(candle_df):
     return df
 
 def calculate_ema(df, ema_period=200, smoothing_period=9):
-    df[f"raw_ema{ema_period}"] = df["close"].ewm(span=ema_period, adjust=False).mean()
-    df[f"ema{ema_period}"] = df[f"raw_ema{ema_period}"].rolling(window=smoothing_period).mean()
+    raw_ema = df["close"].ewm(span=ema_period, adjust=False).mean()
+    # Seed the first EMA value with SMA(ema_period)
+    sma_seed = df["close"].rolling(window=ema_period).mean()
+    raw_ema.iloc[ema_period-1] = sma_seed.iloc[ema_period-1]
+    # Apply SMA smoothing (length = 9)
+    df[f"raw_ema{ema_period}"] = raw_ema
+    df[f"ema{ema_period}"] = raw_ema.rolling(window=smoothing_period).mean()
+    
     return df
 
 def calculate_rsi(df):
