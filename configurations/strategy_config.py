@@ -1,5 +1,6 @@
-STRTEGY_CONFIG={
+STRATEGY_CONFIG={
     "ADX_TRESHOLD": 25,
+    "ER_TRESHOLD": 0.35,
     "RSI_TRESHOLD_LOW": 30,
     "RSI_TRESHOLD_HIGH": 70,
     "RSI_TRESHOLD_MID": 50,
@@ -7,7 +8,7 @@ STRTEGY_CONFIG={
 }
 
 def get_strategy_config():
-    return STRTEGY_CONFIG
+    return STRATEGY_CONFIG
 
 def update_strategy_config(new_config: dict):
-    STRTEGY_CONFIG.update(new_config)
+    STRATEGY_CONFIG.update(new_config)

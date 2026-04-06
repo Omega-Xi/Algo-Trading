@@ -111,6 +111,12 @@ def calculate_bollinger_bands(df, period=20, std_dev=2):
     df["bb_lower"] = df["sma"] - (df["std"] * std_dev)
     return df
 
+def calculate_efficiency_ratio(df,period=14):
+    df["price_change"] = df["close"].diff(periods=period).abs()
+    df["volatility"] = df["close"].diff().abs().rolling(window=period).sum()
+    df["efficiency_ratio"] = df["price_change"] / df["volatility"].replace(0, np.nan)
+    return df
+
 def calculate_indicators(candle_df):
     df=calculate_macd(candle_df)
     df=calculate_rsi(df)
@@ -119,4 +125,5 @@ def calculate_indicators(candle_df):
     df=calculate_vwap(df)
     df=calculate_bollinger_bands(df)
     df = calculate_ema(df, ema_period=200)
+    df = calculate_efficiency_ratio(df)
     return df

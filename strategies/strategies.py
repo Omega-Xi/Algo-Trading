@@ -36,17 +36,18 @@ def macd_ema_strategy(bot,indicator_results:dict):
         signal_prev, signal_curr = df_5["signal"].iloc[-2], df_5["signal"].iloc[-1] 
         ema200_curr = df_5["ema200"].iloc[-1]
         adx_curr=df_15["adx"].iloc[-1]
+        er_curr=df_15["efficiency_ratio"].iloc[-1]
         timestamp_curr = df_1.index[-1].strftime('%H:%M')
 
-        print(f"[{timestamp_curr}]| MACD:{macd_curr:.2f} | SIGNAL:{signal_curr:.2f} | EMA200:{ema200_curr:.2f} | PRICE:{price_curr:.2f} | ADX:{adx_curr:.2f} ",end='\r')
+        print(f"[{timestamp_curr}]| MACD:{macd_curr:.2f} | SIGNAL:{signal_curr:.2f} | EMA200:{ema200_curr:.2f} | PRICE:{price_curr:.2f} | ADX:{adx_curr:.2f} | ER:{er_curr:.2f} ",end='\r')
         # Bullish
-        if macd_prev < signal_prev and macd_curr > signal_curr and price_curr > ema200_curr and adx_curr > STRTEGY_CONFIG["ADX_TRESHOLD"]:
+        if macd_prev < signal_prev and macd_curr > signal_curr and price_curr > ema200_curr and adx_curr > STRATEGY_CONFIG["ADX_TRESHOLD"] and er_curr > STRATEGY_CONFIG["ER_TRESHOLD"]:
             logging.info(f"Bullish MACD crossover + Price above EMA200 → Entering CE trade Index Price:{bot.index_price}")
             bot.option_type="CE"
             bot.enter_trade("CE")
 
         # Bearish
-        elif macd_prev > signal_prev and macd_curr < signal_curr and price_curr < ema200_curr and adx_curr > STRTEGY_CONFIG["ADX_TRESHOLD"]:
+        elif macd_prev > signal_prev and macd_curr < signal_curr and price_curr < ema200_curr and adx_curr > STRATEGY_CONFIG["ADX_TRESHOLD"] and er_curr > STRATEGY_CONFIG["ER_TRESHOLD"]:
             logging.info(f"Bearish MACD crossover + Price below EMA200 → Entering PE trade Index Price:{bot.index_price}")
             bot.option_type="PE"
             bot.enter_trade("PE")
@@ -67,9 +68,9 @@ def macd_rsi_strategy(bot,indicator_results:dict):
 
         macd_bullish = macd_prev < signal_prev and macd_curr > signal_curr and macd_curr < 0
         macd_bearish = macd_prev > signal_prev and macd_curr < signal_curr and macd_curr > 0
-        rsi_bullish = STRTEGY_CONFIG["RSI_TRESHOLD_MID"] < rsi_curr < STRTEGY_CONFIG["RSI_TRESHOLD_HIGH"]
-        rsi_bearish = STRTEGY_CONFIG["RSI_TRESHOLD_MID"] > rsi_curr > STRTEGY_CONFIG["RSI_TRESHOLD_LOW"]
-        market_strong = adx_curr > STRTEGY_CONFIG["ADX_TRESHOLD"]
+        rsi_bullish = STRATEGY_CONFIG["RSI_TRESHOLD_MID"] < rsi_curr < STRATEGY_CONFIG["RSI_TRESHOLD_HIGH"]
+        rsi_bearish = STRATEGY_CONFIG["RSI_TRESHOLD_MID"] > rsi_curr > STRATEGY_CONFIG["RSI_TRESHOLD_LOW"]
+        market_strong = adx_curr > STRATEGY_CONFIG["ADX_TRESHOLD"]
 
         print(f"[{timestamp_curr}]| MACD:{macd_curr:.2f} | SIGNAL:{signal_curr:.2f} | RSI:{rsi_curr:.2f} | ADX:{adx_curr:.2f} ",end='\r')
         # Bullish
@@ -100,12 +101,12 @@ def macd_adx_strategy(bot,indicator_results:dict):
 
         print(f"[{timestamp_curr}]| MACD:{macd_curr:.2f} | SIGNAL:{signal_curr:.2f} | ADX:{adx_curr:.2f} ",end='\r')
 
-        if macd_prev < signal_prev and macd_curr > signal_curr and adx_curr > STRTEGY_CONFIG["ADX_TRESHOLD"] and adx_curr > adx_prev:
+        if macd_prev < signal_prev and macd_curr > signal_curr and adx_curr > STRATEGY_CONFIG["ADX_TRESHOLD"] and adx_curr > adx_prev:
             logging.info("Bullish MACD + ADX → Enter CE")
             bot.option_type = "CE"
             bot.enter_trade("CE")
 
-        elif macd_prev > signal_prev and macd_curr < signal_curr and adx_curr > STRTEGY_CONFIG["ADX_TRESHOLD"] and adx_curr > adx_prev:
+        elif macd_prev > signal_prev and macd_curr < signal_curr and adx_curr > STRATEGY_CONFIG["ADX_TRESHOLD"] and adx_curr > adx_prev:
             logging.info("Bearish MACD + ADX → Enter PE")
             bot.option_type = "PE"
             bot.enter_trade("PE")
@@ -131,14 +132,14 @@ def vwap_rsi_strategy(bot,indicator_results:dict):
 
         print(f"[{timestamp_curr}] Price: {close_curr:.2f} | VWAP: {vwap_curr:.2f} | RSI: {rsi_curr:.2f}  ", end="\r")
 
-        vwap_crossover_up_curr = (close_prev < vwap_prev and close_curr > vwap_curr * (1 + STRTEGY_CONFIG["VWAP_CLOSE_TOLERANCE"]))
-        vwap_crossover_up_prev = (close_last < vwap_last and close_prev > vwap_prev * (1 + STRTEGY_CONFIG["VWAP_CLOSE_TOLERANCE"]))
-        rsi_borderline_up_prev = 40 < rsi_prev < STRTEGY_CONFIG["RSI_TRESHOLD_MID"]
-        rsi_strong_up = (STRTEGY_CONFIG["RSI_TRESHOLD_MID"] < rsi_curr < STRTEGY_CONFIG["RSI_TRESHOLD_HIGH"])
-        vwap_crossover_down_curr = (close_prev > vwap_prev and close_curr < vwap_curr * (1 - STRTEGY_CONFIG["VWAP_CLOSE_TOLERANCE"]))
-        vwap_crossover_down_prev = (close_last > vwap_last and close_prev < vwap_prev * (1 - STRTEGY_CONFIG["VWAP_CLOSE_TOLERANCE"]))
-        rsi_borderline_down_prev = 60 > rsi_prev > STRTEGY_CONFIG["RSI_TRESHOLD_MID"]
-        rsi_strong_down = (STRTEGY_CONFIG["RSI_TRESHOLD_LOW"] < rsi_curr < STRTEGY_CONFIG["RSI_TRESHOLD_MID"])
+        vwap_crossover_up_curr = (close_prev < vwap_prev and close_curr > vwap_curr * (1 + STRATEGY_CONFIG["VWAP_CLOSE_TOLERANCE"]))
+        vwap_crossover_up_prev = (close_last < vwap_last and close_prev > vwap_prev * (1 + STRATEGY_CONFIG["VWAP_CLOSE_TOLERANCE"]))
+        rsi_borderline_up_prev = 40 < rsi_prev < STRATEGY_CONFIG["RSI_TRESHOLD_MID"]
+        rsi_strong_up = (STRATEGY_CONFIG["RSI_TRESHOLD_MID"] < rsi_curr < STRATEGY_CONFIG["RSI_TRESHOLD_HIGH"])
+        vwap_crossover_down_curr = (close_prev > vwap_prev and close_curr < vwap_curr * (1 - STRATEGY_CONFIG["VWAP_CLOSE_TOLERANCE"]))
+        vwap_crossover_down_prev = (close_last > vwap_last and close_prev < vwap_prev * (1 - STRATEGY_CONFIG["VWAP_CLOSE_TOLERANCE"]))
+        rsi_borderline_down_prev = 60 > rsi_prev > STRATEGY_CONFIG["RSI_TRESHOLD_MID"]
+        rsi_strong_down = (STRATEGY_CONFIG["RSI_TRESHOLD_LOW"] < rsi_curr < STRATEGY_CONFIG["RSI_TRESHOLD_MID"])
 
         if vwap_crossover_up_curr and rsi_strong_up:
             logging.info(f"[STAGE 1] CE Immediate Entry VWAP Crossover + RSI Match | Price:{close_curr:.2f} > VWAP:{vwap_curr:.2f} | RSI:{rsi_curr:.2f} | Index:{bot.index_price}")
@@ -176,13 +177,13 @@ def bollinger_rsi_mean_reversion(bot, indicator_results: dict):
         print(f"[{timestamp_curr}] Price:{close_curr:.2f} | BB_Upper:{upper_band:.2f} | BB_Lower:{lower_band:.2f} | RSI:{rsi_curr:.2f}", end="\r")
 
         # Overbought → Expect pullback
-        if close_curr > upper_band and rsi_curr > STRTEGY_CONFIG["RSI_TRESHOLD_HIGH"]:
+        if close_curr > upper_band and rsi_curr > STRATEGY_CONFIG["RSI_TRESHOLD_HIGH"]:
             logging.info(f"Overbought: Price above BB Upper + RSI={rsi_curr:.2f} → Enter PE | Index:{bot.index_price}")
             bot.option_type = "PE"
             bot.enter_trade("PE")
 
         # Oversold → Expect bounce
-        elif close_curr < lower_band and rsi_curr < STRTEGY_CONFIG["RSI_TRESHOLD_LOW"]:
+        elif close_curr < lower_band and rsi_curr < STRATEGY_CONFIG["RSI_TRESHOLD_LOW"]:
             logging.info(f"Oversold: Price below BB Lower + RSI={rsi_curr:.2f} → Enter CE | Index:{bot.index_price}")
             bot.option_type = "CE"
             bot.enter_trade("CE")
@@ -201,7 +202,7 @@ def di_adx_strategy(bot, indicator_results: dict):
 
         print(f"[{timestamp_curr}] +DI:{plus_di_curr:.2f} | -DI:{minus_di_curr:.2f} | ADX:{adx_curr:.2f}", end="\r")
 
-        market_strong = adx_curr > STRTEGY_CONFIG["ADX_TRESHOLD"] and adx_curr > adx_prev
+        market_strong = adx_curr > STRATEGY_CONFIG["ADX_TRESHOLD"] and adx_curr > adx_prev
 
         bullish_condition = plus_di_curr > minus_di_curr and plus_di_curr > plus_di_prev
         bearish_condition = minus_di_curr > plus_di_curr and minus_di_curr > minus_di_prev
@@ -241,7 +242,7 @@ def golden_strategy(bot, indicator_results: dict):
         print(f"[{timestamp_curr}] Price:{close_curr:.2f} | MACD:{macd_curr:.2f} | RSI:{rsi_curr:.2f} | ADX:{adx_curr:.2f} | ATR:{atr_curr:.2f}", end="\r")
 
         # Market regime filters
-        market_trending = adx_curr > STRTEGY_CONFIG["ADX_TRESHOLD"] and adx_curr > adx_prev
+        market_trending = adx_curr > STRATEGY_CONFIG["ADX_TRESHOLD"] and adx_curr > adx_prev
         market_breakout = atr_curr > atr_ma * 1.5
 
         # Trending Market
@@ -257,11 +258,11 @@ def golden_strategy(bot, indicator_results: dict):
 
         # Range-Bound Market
         elif not market_trending:
-            if close_curr < lower_band and rsi_curr < STRTEGY_CONFIG["RSI_TRESHOLD_LOW"]:
+            if close_curr < lower_band and rsi_curr < STRATEGY_CONFIG["RSI_TRESHOLD_LOW"]:
                 logging.info("Golden Strategy → Oversold Mean Reversion (CE)")
                 bot.option_type = "CE"
                 bot.enter_trade("CE")
-            elif close_curr > upper_band and rsi_curr > STRTEGY_CONFIG["RSI_TRESHOLD_HIGH"]:
+            elif close_curr > upper_band and rsi_curr > STRATEGY_CONFIG["RSI_TRESHOLD_HIGH"]:
                 logging.info("Golden Strategy → Overbought Mean Reversion (PE)")
                 bot.option_type = "PE"
                 bot.enter_trade("PE")
