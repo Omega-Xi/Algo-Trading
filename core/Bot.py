@@ -324,6 +324,23 @@ class Bot:
             Alerts.error()
             logging.error(f"Exception When Exiting Position :{e}")
 
+    def cancel_orders(self):
+        api_instance = upstox_client.OrderApiV3(upstox_client.ApiClient(CONFIGURATION))
+        if not self.order_ids:
+            logging.warning("No active orders to cancel")
+            return
+        for order_id in self.order_ids:
+            try:
+                api_response = api_instance.cancel_order(order_id)
+                logging.info(f"Order Cancelled : {api_response.data.order_id}")
+            except ApiException as e:
+                logging.error(f"Failed to cancel order {order_id}: {e}")
+                Alerts.error()
+                return
+        logging.info("All pending orders cancelled")
+        self.order_ids=[]
+        return
+
     def check_exit_conditions(self,ltp,timestamp):
         if ltp is None or not isinstance(ltp, (int, float)):
             logging.error("Invalid LTP value provided.")
@@ -352,6 +369,7 @@ class Bot:
                 if not self.data_collector.check_position():
                     logging.info("Position already exited by broker.")
                 else:
+                    self.cancel_orders()
                     self.exit_position()
             self._cleanup_after_exit()
             self.transcriber.record_exit(ltp, "TARGET_HIT", timestamp)
