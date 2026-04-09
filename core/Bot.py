@@ -331,6 +331,8 @@ class Bot:
         if self.trigger_price is None or self.exit_price is None:
             logging.error("Trigger or exit price not set.")
             return
+        
+        # Check stop loss condition
         if ltp <= self.trigger_price:
             logging.info(f"Stop loss hit: {ltp} <= {self.trigger_price}.")
             if not DRY_RUN:
@@ -343,6 +345,7 @@ class Bot:
             Alerts.trade_exited()
             return
 
+        # Check target condition
         if ltp >= self.exit_price:
             logging.info(f"Target reached: {ltp} >= {self.exit_price}, exiting position.")
             if not DRY_RUN:
@@ -354,7 +357,21 @@ class Bot:
             self.transcriber.record_exit(ltp, "TARGET_HIT", timestamp)
             Alerts.trade_exited()
             return
-
+        
+        # Check for time-based exit (3:29 PM)
+        cutoff_time = timestamp.normalize() + pd.Timedelta(hours=15, minutes=29)
+        if timestamp >= cutoff_time:
+            logging.info(f"Time-based exit triggered at {timestamp.time()}, exiting position.")
+            if not DRY_RUN:
+                if not self.data_collector.check_position():
+                    logging.info("Position already exited by broker.")
+                else:
+                    self.exit_position()
+            self._cleanup_after_exit()
+            self.transcriber.record_exit(ltp, "MARKET_CLOSE", timestamp)
+            Alerts.trade_exited()
+            return
+    
     def _cleanup_after_exit(self):
         self.streamer.unsubscribe([self.option_key])
         self.streamer.subscribe([self.main_instrument_key], "full")
