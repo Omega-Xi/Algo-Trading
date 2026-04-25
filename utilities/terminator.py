@@ -2,6 +2,8 @@ import keyboard
 import sys
 import logging
 from configurations.trading_config import DRY_RUN
+from utilities.alerts import Alerts
+import pandas as pd
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,14 +20,7 @@ class Terminator:
         keyboard.on_press_key("f12",self.kill_bot)
 
     def kill_bot(self,event=None):
-        self.bot.kill_switch = True
-        if not DRY_RUN:
-            if self.bot.data_collector.check_position():
-                logging.info("Open Position Found. Exiting Trade Before Shutdown")
-                self.bot.exit_trade()
-        if hasattr(self.bot, "streamer") and self.bot.streamer is not None:
-            self.bot.streamer.disconnect()
-        logging.info("Bot Stopped Gracefully")
+        self.bot.stop()
 
     def emergency_kill(self,event=None):
         self.bot.kill_switch=True

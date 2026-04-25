@@ -15,6 +15,9 @@ def pre_check_validation(bot):
             print(f"[Active Trade] PE | Stop Loss: {bot.trigger_price} | Current Price: {bot.option_price} | Target: {bot.exit_price}  ",end="\r") 
         return False
     elif not bot.can_enter_trade():
+        if bot.market_closed():
+            logging.info("Market is closed. Bot will resume when market opens.")
+            bot.stop()
         print("Bot in Sleep Mode",end="\r") 
         return False
     elif bot.futures_price is None: 

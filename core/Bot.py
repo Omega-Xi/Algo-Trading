@@ -70,7 +70,10 @@ class Bot:
         self.options_subscribed=False
 
     def can_enter_trade(self):
-        return Timer.market_is_open() and self.cooldown_has_passed()
+        return self.cooldown_has_passed() and Timer.is_time_to_trade()
+
+    def market_closed(self):
+        return not Timer.market_is_open()
 
     def cooldown_has_passed(self):
         if self.last_exit_time is None:
@@ -198,7 +201,7 @@ class Bot:
                 logging.error(f"Data access error: {e} - possibly unexpected data structure")
             except Exception as e:
                 Alerts.error()
-                logging.error(f"Unexpected error: {e}")
+                logging.exception(f"Unexpected error: {e}")
 
     def aggregate_candles(self):
         df = pd.DataFrame(self.tick_buffer)
@@ -404,3 +407,18 @@ class Bot:
         if hasattr(self, 'latest_entry_time'):
             del self.latest_entry_time
         Alerts.trade_exited()
+
+    def stop(self):
+        self.kill_switch = True
+        if not DRY_RUN:
+            if self.data_collector.check_position():
+                logging.info("Open Position Found. Exiting Trade Before Shutdown")
+                self.exit_position()
+        elif self.position_active:
+            logging.info("Open Position Found in Dry Run. Exiting Trade Before Shutdown")
+            self.transcriber.record_exit(self.option_price, "STOPLOSS_HIT", pd.Timestamp.now(tz='Asia/Kolkata'))
+            self._cleanup_after_exit()
+            Alerts.trade_exited()
+        if hasattr(self, "streamer") and self.streamer is not None:
+            self.streamer.disconnect()
+        logging.info("Bot Stopped Gracefully")
