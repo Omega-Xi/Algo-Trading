@@ -3,7 +3,7 @@ import winsound
 class Alerts:
     @staticmethod
     def websocket_connected():
-        winsound.PlaySound("./resources/Websocket Connected.wav", winsound.SND_FILENAME)
+        winsound.PlaySound("./resources/Websocket Connected.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 
     @staticmethod
     def websocket_error():
@@ -14,15 +14,15 @@ class Alerts:
 
     @staticmethod
     def websocket_disconnected():
-        winsound.PlaySound("./resources/Websocket Disconnected.wav", winsound.SND_FILENAME)
+        winsound.PlaySound("./resources/Websocket Disconnected.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 
     @staticmethod
     def trade_entered():
-        winsound.PlaySound("./resources/Trade Entered.wav", winsound.SND_FILENAME)
+        winsound.PlaySound("./resources/Trade Entered.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 
     @staticmethod
     def trade_exited():
-        winsound.PlaySound("./resources/Trade Exited.wav", winsound.SND_FILENAME)
+        winsound.PlaySound("./resources/Trade Exited.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 
     @staticmethod
     def error():
